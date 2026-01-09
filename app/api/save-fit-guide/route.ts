@@ -81,31 +81,46 @@ export async function POST(request: NextRequest) {
         reasons: r.reasons,
       }));
 
-      // Internal notification recipients (structured as array for easy expansion)
-      const internalRecipients = ['tnussbomber@gmail.com'];
+      // ===== RESEND SANDBOX MODE - STRICT COMPLIANCE =====
+      // Force all emails to use sandbox 'from' address and verified 'to' address
+      const SANDBOX_FROM = 'onboarding@resend.dev'; // Strict sandbox format (no display name)
+      const SANDBOX_TO = 'tnussbomber@gmail.com';
+      // ==================================================
 
-      // Send internal alert to HopeChest team
-      await Promise.all(
-        internalRecipients.map(recipient =>
-          resend.emails.send({
-            from: 'HopeChest Partnership Guide <onboarding@resend.dev>',
-            to: recipient,
-            subject: `New Vision Trip Lead: ${wizardState.churchName}`,
-            react: InternalAlert({
-              churchName: wizardState.churchName,
-              contactName: wizardState.contactName,
-              contactEmail: wizardState.email,
-              contactRole: wizardState.contactRole,
-              topMatches: top3Matches,
-            }),
-          })
-        )
-      );
+      // Check API key exists
+      console.log('🔑 Resend API Key:', process.env.RESEND_API_KEY ? 'Key exists ✓' : '❌ MISSING KEY');
+      console.log('📧 Email configuration:');
+      console.log('   From:', SANDBOX_FROM);
+      console.log('   To:', SANDBOX_TO);
 
-      // Send pastor confirmation email
-      await resend.emails.send({
-        from: 'HopeChest Partnership Guide <onboarding@resend.dev>',
-        to: wizardState.email,
+      // Send internal alert to verified sandbox email
+      console.log('\n📨 Attempting to send Internal Alert email...');
+      const internalResult = await resend.emails.send({
+        from: SANDBOX_FROM,
+        to: SANDBOX_TO,
+        subject: `New Vision Trip Lead: ${wizardState.churchName}`,
+        react: InternalAlert({
+          churchName: wizardState.churchName,
+          contactName: wizardState.contactName,
+          contactEmail: wizardState.email,
+          contactRole: wizardState.contactRole,
+          topMatches: top3Matches,
+        }),
+      });
+
+      console.log('✅ Internal Alert Response:', JSON.stringify(internalResult, null, 2));
+      
+      // Check for errors in response
+      if (internalResult.error) {
+        console.error('❌ Internal Alert Error:', internalResult.error);
+        throw new Error(`Internal Alert failed: ${JSON.stringify(internalResult.error)}`);
+      }
+
+      // Send pastor confirmation email - OVERRIDDEN to verified sandbox email
+      console.log('\n📨 Attempting to send Pastor Confirmation email...');
+      const pastorResult = await resend.emails.send({
+        from: SANDBOX_FROM,
+        to: SANDBOX_TO, // Temporarily overriding wizardState.email for sandbox testing
         subject: 'Your HopeChest Partnership Guide',
         react: PastorResults({
           contactName: wizardState.contactName,
@@ -113,7 +128,15 @@ export async function POST(request: NextRequest) {
         }),
       });
 
-      console.log('Emails sent successfully');
+      console.log('✅ Pastor Confirmation Response:', JSON.stringify(pastorResult, null, 2));
+      
+      // Check for errors in response
+      if (pastorResult.error) {
+        console.error('❌ Pastor Confirmation Error:', pastorResult.error);
+        throw new Error(`Pastor Confirmation failed: ${JSON.stringify(pastorResult.error)}`);
+      }
+
+      console.log('\n✨ All emails sent successfully to sandbox address:', SANDBOX_TO);
     } catch (emailError) {
       // Log email error but don't fail the overall operation
       console.error('Error sending emails:', emailError);
