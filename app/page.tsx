@@ -1,64 +1,104 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import Hero from '../src/components/Hero';
+import Wizard from '../src/components/Wizard';
+import Results from '../src/components/Results';
+import { calculateCountryScores } from '../src/lib/scoring';
+import { WizardState, ScoringResult } from '../src/types/wizard';
 
 export default function Home() {
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [wizardAnswers, setWizardAnswers] = useState<WizardState | null>(null);
+  const [scoringResults, setScoringResults] = useState<ScoringResult | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const handleWizardComplete = (answers: WizardState) => {
+    setWizardAnswers(answers);
+    
+    // Calculate scores using the scoring engine
+    const results = calculateCountryScores(answers);
+    setScoringResults(results);
+  };
+
+  // Scroll to results after wizard completes
+  useEffect(() => {
+    if (scoringResults && resultsRef.current) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [scoringResults]);
+
+  const handleReset = () => {
+    setWizardAnswers(null);
+    setScoringResults(null);
+  };
+
+  // Confidence badge styling
+  const getConfidenceBadge = (confidence: 'high' | 'medium' | 'low') => {
+    const styles = {
+      high: 'bg-green-100 text-green-800',
+      medium: 'bg-yellow-100 text-yellow-800',
+      low: 'bg-orange-100 text-orange-800',
+    };
+    return styles[confidence];
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <Hero onStartMatchmaker={() => setIsWizardOpen(true)} />
+      
+      {/* Wizard Modal */}
+      <Wizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onComplete={handleWizardComplete}
+      />
+      
+      <main className="container mx-auto px-4 py-12" ref={resultsRef}>
+        {scoringResults && wizardAnswers ? (
+          <Results
+            wizardAnswers={wizardAnswers}
+            scoringResults={scoringResults}
+            onReset={handleReset}
+          />
+        ) : (
+          /* DEFAULT VIEW - Before wizard completion */
+          <div className="text-center">
+            <h1 className="text-5xl font-bold text-brand-teal mb-4">
+              Welcome to the HopeChest Vision Trip Fit Guide
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Discover which HopeChest partnership is the perfect fit for your church's DNA.
+            </p>
+            <p className="text-gray-500 mb-8">
+              Click "Start Matchmaker" above to begin your personalized assessment.
+            </p>
+            
+            {/* Optional: Show all countries as preview */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+                HopeChest Partners With Churches In:
+              </h2>
+              <div className="flex justify-center gap-8 text-xl text-gray-700">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🇬🇹</div>
+                  <p className="font-semibold">Guatemala</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🇺🇬</div>
+                  <p className="font-semibold">Uganda</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🇪🇹</div>
+                  <p className="font-semibold">Ethiopia</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

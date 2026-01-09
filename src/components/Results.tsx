@@ -1,0 +1,328 @@
+import { WizardState, ScoringResult } from '../types/wizard';
+import { VisionTrip } from '../types';
+import { useEffect, useRef, useState } from 'react';
+import { saveFitGuide } from '../lib/api';
+
+interface ResultsProps {
+  wizardAnswers: WizardState;
+  scoringResults: ScoringResult;
+  onReset: () => void;
+}
+
+// Travel facts, images, and vision trips for each country
+const COUNTRY_DATA = {
+  Guatemala: {
+    imageUrl: 'https://loremflickr.com/800/400/guatemala,landscape',
+    considerations: [
+      'Shorter time commitment (5–6 days total)',
+      'Most accessible first trip option',
+      'Great for Spanish speakers or immersion learners',
+    ],
+    duration: '5–6 days',
+    costRange: '$1,500–$2,200',
+    language: 'Spanish',
+    visionTrips: [
+      { dateRange: 'Feb 23–28', leader: 'TBD', tripId: 'guatemala-feb-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-feb-2026' },
+      { dateRange: 'Apr 13–18', leader: 'TBD', tripId: 'guatemala-apr-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-apr-2026' },
+      { dateRange: 'Jun 15–20', leader: 'TBD', tripId: 'guatemala-jun-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-jun-2026' },
+      { dateRange: 'Sep 7–12', leader: 'TBD', tripId: 'guatemala-sep-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-sep-2026' },
+    ] as VisionTrip[],
+  },
+  Uganda: {
+    imageUrl: 'https://loremflickr.com/800/400/uganda,africa,landscape',
+    considerations: [
+      'Typically requires 2–3 flight connections',
+      '10-day commitment including travel time',
+      'English is widely spoken—easy communication',
+    ],
+    duration: '10 days',
+    costRange: '$1,800–$2,750',
+    language: 'English',
+    visionTrips: [
+      { dateRange: 'Feb 10–18', leader: 'TBD', tripId: 'uganda-feb-2026', registrationUrl: 'https://hopechestint.org/register/uganda-feb-2026' },
+      { dateRange: 'Apr 7–14', leader: 'TBD', tripId: 'uganda-apr-2026', registrationUrl: 'https://hopechestint.org/register/uganda-apr-2026' },
+      { dateRange: 'Jul 27–Aug 4', leader: 'TBD', tripId: 'uganda-jul-2026', registrationUrl: 'https://hopechestint.org/register/uganda-jul-2026' },
+      { dateRange: 'Sep 8–15', leader: 'TBD', tripId: 'uganda-sep-2026', registrationUrl: 'https://hopechestint.org/register/uganda-sep-2026' },
+    ] as VisionTrip[],
+  },
+  Ethiopia: {
+    imageUrl: 'https://loremflickr.com/800/400/ethiopia,africa,landscape',
+    considerations: [
+      'Direct flights available from select U.S. cities',
+      '10-day trip duration',
+      'Christian-majority context with meaningful Muslim-area ministry',
+    ],
+    duration: '10 days',
+    costRange: '$1,800–$2,750',
+    language: 'Amharic (interpreters available)',
+    visionTrips: [
+      { dateRange: 'Feb 16–20', leader: 'Peter Y. & Thad S.', tripId: 'ethiopia-feb-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-feb-2026' },
+      { dateRange: 'May 6–11', leader: 'TBD', tripId: 'ethiopia-may-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-may-2026' },
+      { dateRange: 'Aug 12–17', leader: 'TBD', tripId: 'ethiopia-aug-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-aug-2026' },
+    ] as VisionTrip[],
+  },
+};
+
+export default function Results({ wizardAnswers, scoringResults, onReset }: ResultsProps) {
+  const hasSaved = useRef(false);
+  const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | 'error' | null>(null);
+
+  // Save to database on mount
+  useEffect(() => {
+    if (hasSaved.current) return; // Prevent duplicate saves
+    
+    hasSaved.current = true;
+    setSaveStatus('saving');
+    
+    const saveData = async () => {
+      const result = await saveFitGuide(
+        wizardAnswers,
+        scoringResults.top3,
+        scoringResults.allScores,
+        scoringResults.confidence
+      );
+      
+      if (result.success) {
+        setSaveStatus('saved');
+      } else {
+        setSaveStatus('error');
+        console.error('Failed to save fit guide:', result.error);
+      }
+    };
+    
+    saveData();
+  }, [wizardAnswers, scoringResults]);
+
+  // Fit strength styling and labels
+  const getFitStrength = (confidence: 'high' | 'medium' | 'low') => {
+    const config = {
+      high: {
+        label: 'Strong Fit',
+        color: 'bg-green-500',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-800',
+        width: 'w-full',
+        message: 'We have high confidence these partnerships align beautifully with your church DNA.',
+      },
+      medium: {
+        label: 'Good Fit',
+        color: 'bg-yellow-500',
+        bgColor: 'bg-yellow-50',
+        textColor: 'text-yellow-800',
+        width: 'w-2/3',
+        message: 'These look like strong possibilities. A HopeChest team member can help refine the fit.',
+      },
+      low: {
+        label: 'Exploring Fit',
+        color: 'bg-orange-500',
+        bgColor: 'bg-orange-50',
+        textColor: 'text-orange-800',
+        width: 'w-1/3',
+        message: "We'd love to learn more about your vision. Our team will reach out to explore options together.",
+      },
+    };
+    return config[confidence];
+  };
+
+  const fitStrength = getFitStrength(scoringResults.confidence);
+
+  // Get alignment badge based on top score
+  const getAlignmentBadge = () => {
+    const topScore = scoringResults.top3[0]?.score || 0;
+    if (topScore > 80) {
+      return { label: 'Strong Ministry Alignment', icon: '✦' };
+    } else if (topScore > 50) {
+      return { label: 'Good Ministry Alignment', icon: '○' };
+    } else {
+      return { label: 'Potential Alignment', icon: '·' };
+    }
+  };
+
+  const alignmentBadge = getAlignmentBadge();
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Save Status Indicator */}
+      {saveStatus && (
+        <div className="flex justify-center mb-6">
+          {saveStatus === 'saving' && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm">
+              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Generating your report...</span>
+            </div>
+          )}
+          {saveStatus === 'saved' && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>Results saved</span>
+            </div>
+          )}
+          {saveStatus === 'error' && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-full text-sm">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span>Error saving (results still displayed)</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold text-brand-teal mb-6">
+          For {wizardAnswers.churchName}, here are the partnerships we invite you to explore
+        </h1>
+
+        {/* Alignment Badge */}
+        <div className="inline-flex items-center gap-2 px-5 py-2 bg-brand-teal/10 text-brand-teal-dark rounded-full mb-4">
+          <span className="text-sm">{alignmentBadge.icon}</span>
+          <span className="text-sm font-semibold">{alignmentBadge.label}</span>
+        </div>
+
+        {/* Discernment Copy */}
+        <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          These recommendations are a starting point for your team's prayers and discernment. While the data suggests a strong fit, we trust that wisdom and the Spirit will guide your final decision.
+        </p>
+      </div>
+
+      {/* Country Cards - Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        {scoringResults.top3.map((result, index) => {
+          const countryData = COUNTRY_DATA[result.country as keyof typeof COUNTRY_DATA];
+          
+          return (
+            <div
+              key={result.country}
+              className="flex flex-col h-full bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow"
+            >
+              {/* Hero Image with Ranking */}
+              <div className="relative h-48 overflow-hidden flex-shrink-0">
+                <img
+                  src={countryData.imageUrl}
+                  alt={result.country}
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                
+                {/* Country Name and Ranking */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="inline-block bg-brand-teal text-white px-3 py-1 rounded-full text-xs font-semibold mb-2">
+                    #{index + 1} Recommendation
+                  </div>
+                  <h2 className="text-3xl font-bold text-white">
+                    {result.country}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Card Content - Flex column to push vision trips to bottom */}
+              <div className="p-6 flex-1 flex flex-col">
+                {/* Why It Could Be a Good Fit */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span className="text-brand-teal">✓</span>
+                    Why it could be a good fit
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {result.reasons.slice(0, 3).map((reason, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm">
+                        <span className="text-brand-teal mt-0.5 flex-shrink-0">•</span>
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Things to Consider */}
+                <div className="mb-4 bg-blue-50 rounded-lg p-4">
+                  <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1">
+                    <span className="text-blue-600">ℹ️</span>
+                    Things to consider
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {countryData.considerations.map((consideration, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-gray-700 text-xs">
+                        <span className="text-blue-600 mt-0.5 flex-shrink-0">→</span>
+                        <span>{consideration}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Trip Snapshot */}
+                <div className="bg-brand-teal-bg rounded-lg p-4 mb-4">
+                  <h3 className="text-sm font-bold text-brand-teal-dark mb-3">
+                    Trip Snapshot
+                  </h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Duration</p>
+                      <p className="text-sm font-bold text-gray-800">{countryData.duration}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Cost Range</p>
+                      <p className="text-sm font-bold text-gray-800">{countryData.costRange}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Language</p>
+                      <p className="text-sm font-bold text-gray-800">{countryData.language}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2026 Vision Trips - Pushed to bottom with mt-auto */}
+                <div className="mt-auto pt-4 border-t border-gray-200">
+                  <h3 className="text-sm font-bold text-gray-800 mb-3">
+                    2026 Vision Trips
+                  </h3>
+                  <div className="space-y-2">
+                    {countryData.visionTrips.map((trip) => (
+                      <div key={trip.tripId} className="flex justify-between items-center">
+                        <span className="text-sm text-gray-700">{trip.dateRange}</span>
+                        <a
+                          href={trip.registrationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-1 bg-brand-orange hover:bg-brand-brown text-white text-xs font-semibold rounded-full transition-colors"
+                        >
+                          Register
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Footer Actions */}
+      <div className="text-center space-y-6 pb-12">
+        <div className="bg-white rounded-lg p-6 shadow-md max-w-2xl mx-auto">
+          <p className="text-gray-700 mb-2">
+            <span className="text-green-600 font-semibold">✅ Your Fit Guide is ready.</span>
+          </p>
+          <p className="text-gray-600 text-sm">
+            We've emailed a copy to <span className="font-semibold">{wizardAnswers.email}</span> and our team. 
+            A HopeChest representative will follow up to help you take the next step.
+          </p>
+        </div>
+
+        <button
+          onClick={onReset}
+          className="text-brand-teal hover:text-brand-teal-dark font-semibold underline"
+        >
+          Start over with new answers
+        </button>
+      </div>
+    </div>
+  );
+}
