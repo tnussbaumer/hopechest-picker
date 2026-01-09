@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Hero from '../src/components/Hero';
+import Image from 'next/image';
 import Wizard from '../src/components/Wizard';
 import Results from '../src/components/Results';
 import { calculateCountryScores } from '../src/lib/scoring';
@@ -35,21 +35,8 @@ export default function Home() {
     setScoringResults(null);
   };
 
-  // Confidence badge styling
-  const getConfidenceBadge = (confidence: 'high' | 'medium' | 'low') => {
-    const styles = {
-      high: 'bg-green-100 text-green-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      low: 'bg-orange-100 text-orange-800',
-    };
-    return styles[confidence];
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <Hero onStartMatchmaker={() => setIsWizardOpen(true)} />
-      
+    <>
       {/* Wizard Modal */}
       <Wizard
         isOpen={isWizardOpen}
@@ -57,49 +44,69 @@ export default function Home() {
         onComplete={handleWizardComplete}
       />
       
-      <main className="container mx-auto px-4 py-12" ref={resultsRef}>
-        {scoringResults && wizardAnswers ? (
-          <Results
-            wizardAnswers={wizardAnswers}
-            scoringResults={scoringResults}
-            onReset={handleReset}
-          />
-        ) : (
-          /* DEFAULT VIEW - Before wizard completion */
-          <div className="text-center">
-            <h1 className="text-5xl font-bold text-brand-teal mb-4">
-              Welcome to the HopeChest Vision Trip Fit Guide
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Discover which HopeChest partnership is the perfect fit for your church's DNA.
-            </p>
-            <p className="text-gray-500 mb-8">
-              Click "Start Matchmaker" above to begin your personalized assessment.
-            </p>
-            
-            {/* Optional: Show all countries as preview */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-semibold text-gray-700 mb-6">
-                HopeChest Partners With Churches In:
-              </h2>
-              <div className="flex justify-center gap-8 text-xl text-gray-700">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">🇬🇹</div>
-                  <p className="font-semibold">Guatemala</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl mb-2">🇺🇬</div>
-                  <p className="font-semibold">Uganda</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl mb-2">🇪🇹</div>
-                  <p className="font-semibold">Ethiopia</p>
-                </div>
-              </div>
-            </div>
+      {scoringResults && wizardAnswers ? (
+        /* RESULTS VIEW - After wizard completion */
+        <main className="min-h-screen bg-gray-50 py-12" ref={resultsRef}>
+          <div className="container mx-auto px-4">
+            <Results
+              wizardAnswers={wizardAnswers}
+              scoringResults={scoringResults}
+              onReset={handleReset}
+            />
           </div>
-        )}
-      </main>
-    </div>
+        </main>
+      ) : (
+        /* LANDING PAGE - Before wizard completion */
+        <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/hero-bg.jpg"
+              alt="HopeChest Partnership"
+              fill
+              className="object-cover object-center"
+              priority
+              quality={90}
+            />
+          </div>
+
+          {/* Brand Overlay - Dark gradient for text readability */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-br from-brand-teal/90 via-brand-teal-dark/85 to-brand-brown/90"></div>
+
+          {/* Content - Centered Stack */}
+          <div className="relative z-20 max-w-3xl mx-auto px-8 text-center">
+            {/* Logo - White filter */}
+            <div className="mb-8 flex justify-center">
+              <Image
+                src="/hopechest-logo.png"
+                alt="HopeChest Logo"
+                width={220}
+                height={88}
+                className="brightness-0 invert"
+                priority
+              />
+            </div>
+
+            {/* Headline - Have Heart Brand Font */}
+            <h1 className="font-brand text-6xl md:text-7xl text-white mb-6 leading-tight">
+              Find Your Perfect Partnership
+            </h1>
+
+            {/* Subtext - Open Sans */}
+            <p className="font-sans text-xl md:text-2xl text-white/90 mb-10 leading-relaxed">
+              Connect your church's heart with a community's greatest needs through a localized, long-term partnership.
+            </p>
+
+            {/* CTA Button - Bright contrasting color */}
+            <button
+              onClick={() => setIsWizardOpen(true)}
+              className="inline-block bg-brand-tan hover:bg-yellow-300 text-brand-brown font-bold text-xl px-12 py-5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 hover:shadow-yellow-200/50"
+            >
+              Start Your Journey
+            </button>
+          </div>
+        </main>
+      )}
+    </>
   );
 }
