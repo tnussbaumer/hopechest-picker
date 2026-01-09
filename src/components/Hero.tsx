@@ -34,7 +34,7 @@ export default function Hero({ onStartMatchmaker }: HeroProps) {
         
         {/* Headline */}
         <div className="space-y-6">
-          <h1 className="font-serif italic text-5xl md:text-7xl font-bold text-white leading-tight">
+          <h1 className="font-brand text-7xl md:text-8xl text-white leading-tight">
             Find Your Perfect Partnership
           </h1>
           <button
