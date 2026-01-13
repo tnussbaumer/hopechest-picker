@@ -23,7 +23,7 @@ const COUNTRY_DATA = {
       'Most accessible first trip option',
       'Great for Spanish speakers or immersion learners',
     ],
-    duration: '5–6 days',
+    duration: '5 days',
     costRange: '$1,500–$2,200',
     language: 'Spanish',
     visionTrips: [
@@ -57,7 +57,7 @@ const COUNTRY_DATA = {
       '10-day commitment including travel time',
       'English is widely spoken—easy communication',
     ],
-    duration: '10 days',
+    duration: '5-7 days',
     costRange: '$1,800–$2,750',
     language: 'English',
     visionTrips: [
@@ -78,7 +78,7 @@ const COUNTRY_DATA = {
       '10-day trip duration',
       'Christian-majority context with meaningful Muslim-area ministry',
     ],
-    duration: '10 days',
+    duration: '5-7 days',
     costRange: '$1,800–$2,750',
     language: 'Amharic (interpreters available)',
     visionTrips: [
@@ -306,19 +306,15 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                   </ul>
                 </div>
 
-                {/* Trip Snapshot */}
+                {/* Vision Trip Snapshot */}
                 <div className="bg-brand-teal-bg rounded-lg p-4 mb-4">
                   <h3 className="text-sm font-bold text-brand-teal-dark mb-3">
-                    Trip Snapshot
+                    Vision Trip Snapshot
                   </h3>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Duration</p>
                       <p className="text-sm font-bold text-gray-800">{countryData.duration}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Cost Range</p>
-                      <p className="text-sm font-bold text-gray-800">{countryData.costRange}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Language</p>

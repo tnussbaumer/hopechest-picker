@@ -14,8 +14,8 @@ export function generatePersonalizedSections(
   const { impactDNA, mobilization, partnershipPosture, contactName } = wizardAnswers;
   const firstName = contactName.split(' ')[0];
 
-  // Generate sections based on Impact DNA
-  if (impactDNA === 'education_schools') {
+  // Generate sections based on Impact DNA (now supports multiple selections)
+  if (impactDNA && impactDNA.includes('education_schools')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Education & Schools Partnership',
@@ -35,7 +35,9 @@ export function generatePersonalizedSections(
         icon: '📚'
       });
     }
-  } else if (impactDNA === 'health_medical') {
+  }
+  
+  if (impactDNA && impactDNA.includes('health_medical')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Medical & Healthcare Ministry',
@@ -55,27 +57,9 @@ export function generatePersonalizedSections(
         icon: '🏥'
       });
     }
-  } else if (impactDNA === 'church_leadership') {
-    if (countryName === 'Uganda') {
-      sections.push({
-        title: 'Church-to-Church Leadership Development',
-        content: `Uganda's church-to-church partnerships create powerful opportunities for leadership development. You'll work alongside local church leaders who serve as the backbone of CarePoints, helping them develop ministry skills, administrative capacity, and discipleship programs. This mutual relationship doesn't just transform their community—it will transform your church's understanding of global partnership and servant leadership.`,
-        icon: '⛪'
-      });
-    } else if (countryName === 'Ethiopia') {
-      sections.push({
-        title: 'Church-to-Church Leadership Development',
-        content: `Ethiopia's ancient Christian heritage offers rich opportunities for church-to-church partnerships. Local church leaders are eager to learn, grow, and strengthen their ministries. Your church can provide leadership training, discipleship resources, pastoral mentorship, and encouragement that multiplies impact throughout entire congregations and communities.`,
-        icon: '⛪'
-      });
-    } else if (countryName === 'Guatemala') {
-      sections.push({
-        title: 'Church-to-Church Leadership Development',
-        content: `Guatemala's vibrant church community welcomes partnership opportunities. Your church can mentor local pastors, provide leadership development, share ministry resources, and build long-term relationships that strengthen both churches. These partnerships often include joint worship experiences, prayer support, and collaborative ministry initiatives.`,
-        icon: '⛪'
-      });
-    }
-  } else if (impactDNA === 'community_transformation') {
+  }
+  
+  if (impactDNA && impactDNA.includes('community_transformation')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Holistic Community Transformation',
@@ -95,7 +79,9 @@ export function generatePersonalizedSections(
         icon: '🌱'
       });
     }
-  } else if (impactDNA === 'frontier_hard_to_reach') {
+  }
+  
+  if (impactDNA && impactDNA.includes('frontier_hard_to_reach')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Reaching Vulnerable Communities',
@@ -115,6 +101,22 @@ export function generatePersonalizedSections(
         icon: '🌍'
       });
     }
+  }
+  
+  if (impactDNA && impactDNA.includes('friendship_model')) {
+    sections.push({
+      title: 'The Friendship Model: Partnerships Built on Dignity',
+      content: `Your heart for relationship-centered ministry aligns perfectly with HopeChest's Friendship Model. This approach reimagines partnership—between two communities and between individuals. Rather than a top-down assignment, it invites children to take the lead in choosing their sponsor, reducing paternalism and reframing sponsorship as a relationship built on dignity and connection. This launch model reflects HopeChest's holistic approach to community transformation, which invests in local leadership, amplifies children's voices, and connects communities in long-term, transformational relationships.`,
+      icon: '🤝'
+    });
+  }
+  
+  if (impactDNA && impactDNA.includes('carepoint_graduation')) {
+    sections.push({
+      title: 'CarePoint Graduation: Building for Independence',
+      content: `Your commitment to sustainable transformation aligns with HopeChest's graduation model. Every CarePoint begins with a target graduation timeline of 8-15 years. Through three phases—Build Foundation (3-5 years), Growth & Development (4-8 years), and Prepare for Independence (3-4 years)—communities transition from external support to local ownership. At graduation, the CarePoint becomes a Community-Based Organization led by trained local leaders. This isn't dependency—it's empowerment. Your partnership plants seeds of possibility that communities nurture into lasting change, powered by their own spirit and drive. Graduation frees resources to serve new communities, multiplying your mission's impact.`,
+      icon: '🎓'
+    });
   }
 
   // Add mobilization-specific content
@@ -141,39 +143,72 @@ function generateMobilizationContent(
   mobilization: MobilizationOption[]
 ): PersonalizedSection | null {
 
-  const mobilizationDescriptions: Record<string, Record<MobilizationOption, string>> = {
+  // Map of mobilization options to their display names for bolding
+  const mobilizationDisplayNames: Record<MobilizationOption, string> = {
+    students_young_adults: 'Students and young adults',
+    families_with_children: 'Families',
+    teachers_educators: 'Educators',
+    medical_professionals: 'Medical professionals',
+    adults_seniors: 'Adult and senior teams',
+    broad_church_wide: 'Church-wide',
+    small_groups_sunday_school: 'Small groups and Sunday school classes',
+    construction_teams: 'Construction teams',
+    spanish_speakers: 'Spanish speakers'
+  };
+
+  const mobilizationDescriptions: Record<string, Partial<Record<MobilizationOption, string>>> = {
     Uganda: {
       students_young_adults: 'Students and young adults thrive on Uganda vision trips, building cross-cultural friendships with Ugandan youth, participating in sports outreach, and serving at CarePoints. These trips often become defining moments in their spiritual journey.',
-      families_with_kids: 'Uganda welcomes families beautifully. Children can interact with Ugandan kids at CarePoints, play together, and see global compassion in action. Many families report these trips as the most meaningful experiences they\'ve shared together.',
+      families_with_children: 'Uganda welcomes families beautifully. Children can interact with Ugandan kids at CarePoints, play together, and see global compassion in action. Many families report these trips as the most meaningful experiences they\'ve shared together.',
       teachers_educators: 'Educators find natural connections in Uganda through school visits, literacy programs, and vocational training centers. You can observe teaching methods, share educational resources, and mentor local teachers who serve hundreds of children.',
       medical_professionals: 'Medical professionals can conduct health screenings, provide basic medical training to community health workers, and assess healthcare needs. Your expertise brings hope to communities where medical care is scarce and preventable diseases are common.',
       adults_seniors: 'Adult and senior teams bring wisdom, life experience, and encouragement to Ugandan communities. Whether supporting income-generating projects, mentoring caregivers, or building relationships with community leaders, your maturity and perspective are invaluable gifts.',
-      broad_church_wide: 'Church-wide mobilization to Uganda creates unity and shared purpose across all ages. From children to seniors, everyone finds meaningful ways to serve—whether through building projects, VBS programs, home visits, or community celebrations.'
+      broad_church_wide: 'Church-wide mobilization to Uganda creates unity and shared purpose across all ages. From children to seniors, everyone finds meaningful ways to serve—whether through building projects, VBS programs, home visits, or community celebrations.',
+      small_groups_sunday_school: 'Small groups and Sunday school classes find deep connection through shared Uganda experiences. These cohesive teams build lasting bonds while serving together, creating stories and relationships that continue long after returning home.',
+      construction_teams: 'Construction teams bring practical skills to Uganda, building classrooms, water systems, and community infrastructure. Your hands-on work creates tangible improvements that serve communities for years to come.',
+      spanish_speakers: 'While Spanish isn\'t spoken in Uganda, your language skills demonstrate cross-cultural flexibility and your team will connect through universal language of service and compassion.'
     },
     Ethiopia: {
       students_young_adults: 'Young adults connect deeply with Ethiopian youth through sports, music, and cultural exchange. Ethiopia\'s rich history and diverse communities provide transformative cross-cultural experiences that shape lifelong global perspectives.',
-      families_with_kids: 'Ethiopian communities warmly welcome families. Children experience hospitality, share meals, and play with Ethiopian children, creating memories and understanding that transcend cultural differences.',
+      families_with_children: 'Ethiopian communities warmly welcome families. Children experience hospitality, share meals, and play with Ethiopian children, creating memories and understanding that transcend cultural differences.',
       teachers_educators: 'Teachers can engage in schools, support literacy initiatives, and encourage local educators. Ethiopia\'s emphasis on education creates natural connections for educators passionate about expanding learning opportunities.',
       medical_professionals: 'Medical teams address critical health needs through clinics, training, and preventative care education. Your medical expertise brings hope where healthcare access is limited and needs are great.',
       adults_seniors: 'Mature believers bring encouragement, wisdom, and partnership to Ethiopian communities. Your life experience and spiritual depth offer invaluable mentorship to local leaders and community members.',
-      broad_church_wide: 'Ethiopia welcomes diverse teams where every age and skill finds meaningful engagement—from children\'s programs to construction, from prayer ministry to agricultural support.'
+      broad_church_wide: 'Ethiopia welcomes diverse teams where every age and skill finds meaningful engagement—from children\'s programs to construction, from prayer ministry to agricultural support.',
+      small_groups_sunday_school: 'Tight-knit groups experience profound transformation together in Ethiopia. Shared experiences deepen existing relationships while creating new ministry momentum back home.',
+      construction_teams: 'Construction expertise is highly valued in Ethiopia for building schools, water systems, and community facilities. Your skilled work addresses critical infrastructure needs.',
+      spanish_speakers: 'Your cross-cultural experience and language skills translate to excellent ministry partnerships in Ethiopia, where English and local languages are spoken.'
     },
     Guatemala: {
       students_young_adults: 'Guatemala\'s proximity and accessibility make it ideal for student trips. Young adults engage through sports, VBS, construction projects, and relationship-building that often ignites passion for missions.',
-      families_with_kids: 'Guatemala is exceptionally family-friendly with short travel time and culturally rich experiences. Families serve together, children connect across language barriers through play, and everyone returns transformed.',
+      families_with_children: 'Guatemala is exceptionally family-friendly with short travel time and culturally rich experiences. Families serve together, children connect across language barriers through play, and everyone returns transformed.',
       teachers_educators: 'Spanish-speaking educators especially thrive in Guatemala, partnering with schools, leading educational activities, and supporting literacy programs that multiply impact through local teachers.',
       medical_professionals: 'Guatemala\'s medical needs create opportunities for dental clinics, health screenings, and training that bring healing and demonstrate Christ\'s compassion in practical, life-changing ways.',
       adults_seniors: 'Mature teams bring construction skills, life wisdom, and encouragement. Guatemala\'s shorter trips accommodate various physical abilities while providing meaningful service opportunities.',
-      broad_church_wide: 'Guatemala\'s accessibility makes church-wide trips practical and impactful. Multiple generations serve together, creating shared experiences that unite your congregation in mission.'
+      broad_church_wide: 'Guatemala\'s accessibility makes church-wide trips practical and impactful. Multiple generations serve together, creating shared experiences that unite your congregation in mission.',
+      small_groups_sunday_school: 'Guatemala is perfect for small group and Sunday school trips. Shorter travel time and lower costs make it accessible while creating tight-knit team experiences that deepen community.',
+      construction_teams: 'Construction teams thrive in Guatemala with accessible building projects, reasonable costs, and immediate visible impact. Many teams return annually to complete multi-phase projects.',
+      spanish_speakers: 'Your Spanish speakers will absolutely thrive in Guatemala! Direct communication creates deeper relationships, richer cultural exchange, and multiplication of ministry impact through language connection.'
     }
   };
 
   const countryDescriptions = mobilizationDescriptions[countryName];
   if (!countryDescriptions) return null;
 
-  const descriptions = mobilization
+  let descriptions = mobilization
     .map(m => countryDescriptions[m])
+    .filter(d => d) // Filter out undefined
     .join(' ');
+
+  // Bold the user-selected mobilization phrases in the text
+  mobilization.forEach((option) => {
+    const displayName = mobilizationDisplayNames[option];
+    if (displayName) {
+      // Create a case-insensitive regex to match the phrase
+      const regex = new RegExp(`(${displayName})`, 'gi');
+      descriptions = descriptions.replace(regex, '<strong>$1</strong>');
+    }
+  });
 
   return {
     title: 'Mobilizing Your Team',

@@ -83,14 +83,19 @@ export function calculateCountryScores(answers: WizardState): ScoringResult {
     applyMobilizationScoring(answers.mobilization, scores, reasons);
   }
   if (answers.spanishToggle) {
-    scores.Guatemala += 15;
+    scores.Guatemala += 5;
     reasons.Guatemala.push('Your Spanish speakers will thrive here');
   }
 
-  // 6. IMPACT DNA & FRONTIER (future - Phase 2)
-  if (answers.impactDNA) {
-    applyImpactDNAScoring(answers.impactDNA, answers.frontierType, scores, reasons);
+  // 6. IMPACT DNA & FRONTIER (future - Phase 2) - now supports multiple selections
+  if (answers.impactDNA && answers.impactDNA.length > 0) {
+    answers.impactDNA.forEach((dna) => {
+      applyImpactDNAScoring(dna, answers.frontierType, scores, reasons);
+    });
   }
+
+  // 6b. ADD ADDITIONAL CONTEXTUAL REASONS to ensure minimum 6 bullet points
+  addContextualReasons(answers, scores, reasons);
 
   // 7. TIE-BREAKING LOGIC
   applyTieBreaking(scores, answers);
@@ -104,6 +109,26 @@ export function calculateCountryScores(answers: WizardState): ScoringResult {
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
+
+  // 8b. NORMALIZE TOP SCORE TO 85-100% RANGE
+  if (sortedCountries.length > 0) {
+    const topScore = sortedCountries[0].score;
+    const minScore = Math.min(...sortedCountries.map(c => c.score));
+    const maxScore = Math.max(...sortedCountries.map(c => c.score));
+    
+    // Normalize the #1 choice to be between 85-100
+    // Other choices will scale proportionally
+    sortedCountries.forEach((country, index) => {
+      if (index === 0) {
+        // Top choice: map to 85-100 range
+        country.score = 100;
+      } else {
+        // Other choices: scale proportionally (maintaining relative differences)
+        const ratio = country.score / topScore;
+        country.score = Math.round(85 + (ratio * 15)); // Will be 85-100 range
+      }
+    });
+  }
 
   // 9. CALCULATE CONFIDENCE
   const confidence = calculateConfidence(answers, sortedCountries);
@@ -344,6 +369,76 @@ function applyImpactDNAScoring(
     scores.Guatemala += 5;
     scores.Uganda += 5;
     scores.Ethiopia += 5;
+  }
+}
+
+/**
+ * Add contextual reasons to ensure minimum 6 bullet points
+ */
+function addContextualReasons(
+  answers: WizardState,
+  scores: Record<string, number>,
+  reasons: Record<string, string[]>
+) {
+  // Sort to find which country has highest score
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const topCountry = sorted[0][0];
+  
+  // Add contextual reasons based on user selections until we have at least 6
+  const currentReasons = reasons[topCountry] || [];
+  
+  // Add partnership-related reasons
+  if (currentReasons.length < 6 && answers.partnershipPosture === 'own_community') {
+    if (topCountry === 'Guatemala') {
+      reasons.Guatemala.push('Build deep, long-term relationships with your own community');
+    } else if (topCountry === 'Uganda') {
+      reasons.Uganda.push('Own a transformational partnership with lasting impact');
+    } else if (topCountry === 'Ethiopia') {
+      reasons.Ethiopia.push('Establish multi-year relationships that change generations');
+    }
+  }
+  
+  // Add Impact DNA related concise reasons
+  if (currentReasons.length < 6 && answers.impactDNA && answers.impactDNA.length > 0) {
+    if (answers.impactDNA.includes('friendship_model')) {
+      reasons[topCountry].push('Dignity-based relationships honor community leadership');
+    }
+    if (currentReasons.length < 6 && answers.impactDNA.includes('carepoint_graduation')) {
+      reasons[topCountry].push('Sustainable model designed for community independence');
+    }
+    if (currentReasons.length < 6 && answers.impactDNA.includes('community_transformation')) {
+      reasons[topCountry].push('Holistic approach addresses root causes, not just symptoms');
+    }
+    if (currentReasons.length < 6 && answers.impactDNA.includes('education_schools')) {
+      reasons[topCountry].push('Education programs create lasting generational change');
+    }
+    if (currentReasons.length < 6 && answers.impactDNA.includes('youth_development_leadership')) {
+      reasons[topCountry].push('Youth leadership development multiplies long-term impact');
+    }
+  }
+  
+  // Add mobilization-specific reasons if we still need more
+  if (currentReasons.length < 6 && answers.mobilization && answers.mobilization.length > 0) {
+    if (answers.mobilization.includes('families_with_children')) {
+      reasons[topCountry].push('Family-friendly environment for meaningful intergenerational impact');
+    }
+    if (currentReasons.length < 6 && answers.mobilization.includes('construction_teams')) {
+      reasons[topCountry].push('Hands-on construction projects create visible, lasting infrastructure');
+    }
+    if (currentReasons.length < 6 && answers.mobilization.includes('medical_professionals')) {
+      reasons[topCountry].push('Critical healthcare needs where your medical expertise makes real difference');
+    }
+  }
+  
+  // General country-specific reasons as fallback
+  if (currentReasons.length < 6) {
+    if (topCountry === 'Guatemala') {
+      reasons.Guatemala.push('Proven track record of successful church partnerships');
+    } else if (topCountry === 'Uganda') {
+      reasons.Uganda.push('High community need creates profound ministry opportunities');
+    } else if (topCountry === 'Ethiopia') {
+      reasons.Ethiopia.push('Rich cultural heritage enhances cross-cultural learning');
+    }
   }
 }
 

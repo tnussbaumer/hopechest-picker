@@ -17,6 +17,9 @@ const DENOMINATIONS = [
   'Catholic',
   'Pentecostal',
   'Lutheran',
+  'Wesleyan',
+  'Orthodox',
+  'Anglican',
   'Other',
 ];
 
@@ -58,8 +61,8 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   const [mobilization, setMobilization] = useState<MobilizationOption[]>([]);
   const [spanishToggle, setSpanishToggle] = useState(false);
   
-  // Screen 6 - Impact DNA
-  const [impactDNA, setImpactDNA] = useState<ImpactDNA | ''>('');
+  // Screen 5 - Impact DNA (now supports multiple selections)
+  const [impactDNA, setImpactDNA] = useState<ImpactDNA[]>([]);
   const [frontierType, setFrontierType] = useState<FrontierType | ''>('');
 
   // Convert slider value (0-100) to importance level
@@ -70,7 +73,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   };
 
   const handleNext = () => {
-    if (step < 6) {
+    if (step < 5) {
       setStep(step + 1);
     } else {
       // Complete the wizard
@@ -89,9 +92,9 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
         englishImportance: sliderToImportance(englishSlider),
         partnershipPosture,
         mobilization: mobilization.length > 0 ? mobilization : undefined,
-        spanishToggle: spanishToggle || undefined,
-        impactDNA: impactDNA || undefined,
-        frontierType: impactDNA === 'frontier_hard_to_reach' && frontierType ? frontierType : undefined,
+        spanishToggle: mobilization.includes('spanish_speakers') || undefined,
+        impactDNA: impactDNA.length > 0 ? impactDNA : undefined,
+        frontierType: impactDNA.includes('frontier_hard_to_reach') && frontierType ? frontierType : undefined,
       };
       onComplete(wizardState);
       handleClose();
@@ -121,7 +124,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
     setPartnershipPosture('own_community');
     setMobilization([]);
     setSpanishToggle(false);
-    setImpactDNA('');
+    setImpactDNA([]);
     setFrontierType('');
     onClose();
   };
@@ -137,13 +140,10 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
       return true; // Sliders always have values
     }
     if (step === 4) {
-      return true; // Partnership posture has a default
-    }
-    if (step === 5) {
       return true; // Mobilization is optional
     }
-    if (step === 6) {
-      return impactDNA !== '';
+    if (step === 5) {
+      return impactDNA.length > 0;
     }
     return false;
   };
@@ -163,7 +163,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
 
         {/* Progress Indicator */}
         <div className="flex justify-center mb-6 gap-2">
-          {[1, 2, 3, 4, 5, 6].map((num) => (
+          {[1, 2, 3, 4, 5].map((num) => (
             <div
               key={num}
               className={`h-2 w-12 rounded-full transition-all ${
@@ -178,7 +178,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
         </div>
 
         {/* Step indicator text */}
-        <p className="text-center text-sm text-gray-500 mb-6">Step {step} of 6</p>
+        <p className="text-center text-sm text-gray-500 mb-6">Step {step} of 5</p>
 
         {/* Step Content */}
         <div className="mb-8">
@@ -227,7 +227,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Your Name *
+                      Full Name *
                     </label>
                     <input
                       type="text"
@@ -351,7 +351,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Where do you already have relationships? (Optional)
+                        Where do you already have global partnerships? (Optional)
                       </label>
                       <input
                         type="text"
@@ -456,46 +456,8 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
             </div>
           )}
 
-          {/* SCREEN 4 - PARTNERSHIP POSTURE */}
+          {/* SCREEN 4 - MOBILIZATION */}
           {step === 4 && (
-            <div>
-              <h2 className="text-3xl font-bold text-brand-teal mb-2">
-                Partnership approach
-              </h2>
-              <p className="text-gray-600 mb-6">
-                We can launch partnerships in different ways depending on your capacity and goals.
-              </p>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Would you prefer your own partnership or to partner with another organization?
-                </label>
-                <div className="space-y-3">
-                  {[
-                    { value: 'own_community', label: 'Own community' },
-                    { value: 'partner_with_others', label: 'Partner with another U.S. church/organization' },
-                    { value: 'flexible', label: 'Flexible' },
-                    { value: 'not_sure', label: 'Not sure' },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setPartnershipPosture(option.value as PartnershipPosture)}
-                      className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                        partnershipPosture === option.value
-                          ? 'border-brand-teal bg-brand-teal-bg text-brand-teal-dark font-semibold'
-                          : 'border-gray-300 hover:border-brand-teal-light'
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SCREEN 5 - MOBILIZATION */}
-          {step === 5 && (
             <div>
               <h2 className="text-3xl font-bold text-brand-teal mb-2">
                 Who do you want to mobilize?
@@ -507,19 +469,22 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    Who are you most excited to mobilize for partner visits? (Select up to 2)
+                    Who are you most excited to mobilize for partner visits (what some call mission trips)? (Select up to 4)
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { value: 'students_young_adults', label: 'Students/young adults' },
-                      { value: 'families_with_kids', label: 'Families with kids' },
+                      { value: 'families_with_children', label: 'Families with Children' },
                       { value: 'teachers_educators', label: 'Teachers / educators' },
                       { value: 'medical_professionals', label: 'Medical professionals' },
                       { value: 'adults_seniors', label: 'Adults & seniors' },
                       { value: 'broad_church_wide', label: 'Broad church-wide' },
+                      { value: 'small_groups_sunday_school', label: 'Small Groups/Sunday School Classes' },
+                      { value: 'construction_teams', label: 'Construction Teams' },
+                      { value: 'spanish_speakers', label: 'Spanish Speakers' },
                     ].map((option) => {
                       const isSelected = mobilization.includes(option.value as MobilizationOption);
-                      const isDisabled = !isSelected && mobilization.length >= 2;
+                      const isDisabled = !isSelected && mobilization.length >= 4;
                       
                       return (
                         <button
@@ -527,7 +492,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                           onClick={() => {
                             if (isSelected) {
                               setMobilization(mobilization.filter(m => m !== option.value));
-                            } else if (mobilization.length < 2) {
+                            } else if (mobilization.length < 4) {
                               setMobilization([...mobilization, option.value as MobilizationOption]);
                             }
                           }}
@@ -554,37 +519,18 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                       );
                     })}
                   </div>
-                  {mobilization.length >= 2 && (
+                  {mobilization.length >= 4 && (
                     <p className="text-xs text-gray-500 mt-2 text-center">
-                      Maximum 2 selections reached
+                      Maximum 4 selections reached
                     </p>
                   )}
-                </div>
-
-                {/* Spanish Toggle */}
-                <div className="pt-4 border-t border-gray-200">
-                  <button
-                    onClick={() => setSpanishToggle(!spanishToggle)}
-                    className="flex items-center gap-3 p-4 w-full rounded-lg border-2 border-gray-300 hover:border-brand-teal-light transition-all"
-                  >
-                    <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                      spanishToggle ? 'bg-brand-teal border-brand-teal' : 'border-gray-300'
-                    }`}>
-                      {spanishToggle && (
-                        <span className="text-white text-sm">✓</span>
-                      )}
-                    </div>
-                    <span className="text-gray-700 font-medium">
-                      We specifically want a partnership where we can utilize our Spanish speakers
-                    </span>
-                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* SCREEN 6 - IMPACT DNA */}
-          {step === 6 && (
+          {/* SCREEN 5 - IMPACT DNA */}
+          {step === 5 && (
             <div>
               <h2 className="text-3xl font-bold text-brand-teal mb-2">
                 Your impact vision
@@ -596,38 +542,57 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    What kind of impact story are you hoping your church can tell?
+                    What kind of impact stories are you hoping your church can tell? (Select all that apply)
                   </label>
                   <div className="space-y-3">
                     {[
                       { value: 'education_schools', label: 'Education / schools / kids thriving' },
                       { value: 'health_medical', label: 'Health / medical support' },
-                      { value: 'church_leadership', label: 'Local church & leadership development' },
                       { value: 'community_transformation', label: 'Community transformation / long-term development' },
                       { value: 'frontier_hard_to_reach', label: 'Frontier / hard-to-reach communities' },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => {
-                          setImpactDNA(option.value as ImpactDNA);
-                          if (option.value !== 'frontier_hard_to_reach') {
-                            setFrontierType('');
-                          }
-                        }}
-                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                          impactDNA === option.value
-                            ? 'border-brand-teal bg-brand-teal-bg text-brand-teal-dark font-semibold'
-                            : 'border-gray-300 hover:border-brand-teal-light'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                      { value: 'youth_development_leadership', label: 'Youth Development & Leadership' },
+                      { value: 'friendship_model', label: 'Friendship Model (Relational / Holistic Partnership)' },
+                      { value: 'carepoint_graduation', label: 'Graduation, not dependency: every CarePoint begins with a target graduation timeline (usually 8–15 years)' },
+                    ].map((option) => {
+                      const isSelected = impactDNA.includes(option.value as ImpactDNA);
+                      
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            if (isSelected) {
+                              setImpactDNA(impactDNA.filter(dna => dna !== option.value));
+                              if (option.value === 'frontier_hard_to_reach') {
+                                setFrontierType('');
+                              }
+                            } else {
+                              setImpactDNA([...impactDNA, option.value as ImpactDNA]);
+                            }
+                          }}
+                          className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                            isSelected
+                              ? 'border-brand-teal bg-brand-teal-bg text-brand-teal-dark font-semibold'
+                              : 'border-gray-300 hover:border-brand-teal-light'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                              isSelected ? 'bg-brand-teal border-brand-teal' : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <span className="text-white text-xs">✓</span>
+                              )}
+                            </div>
+                            <span>{option.label}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Conditional Frontier Follow-up */}
-                {impactDNA === 'frontier_hard_to_reach' && (
+                {impactDNA.includes('frontier_hard_to_reach') && (
                   <div className="pl-4 border-l-4 border-brand-teal-light">
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       What kind of frontier context resonates more?
@@ -680,7 +645,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            {step === 6 ? 'Find My Perfect Match' : 'Next'}
+            {step === 5 ? 'Find My Perfect Match' : 'Next'}
           </button>
         </div>
       </div>
