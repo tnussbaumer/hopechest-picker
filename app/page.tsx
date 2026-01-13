@@ -37,6 +37,21 @@ export default function Home() {
 
   return (
     <>
+      {/* HopeChest Home Button - Fixed at top */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <a
+            href="https://www.hopechest.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-6 py-2 bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold rounded-full transition-colors"
+          >
+            <span>←</span>
+            <span>HopeChest Home</span>
+          </a>
+        </div>
+      </div>
+
       {/* Wizard Modal */}
       <Wizard
         isOpen={isWizardOpen}
@@ -46,7 +61,7 @@ export default function Home() {
       
       {scoringResults && wizardAnswers ? (
         /* RESULTS VIEW - After wizard completion */
-        <main className="min-h-screen bg-gray-50 py-12" ref={resultsRef}>
+        <main className="min-h-screen bg-gray-50 py-12 pt-24" ref={resultsRef}>
           <div className="container mx-auto px-4">
             <Results
               wizardAnswers={wizardAnswers}
@@ -57,7 +72,7 @@ export default function Home() {
         </main>
       ) : (
         /* LANDING PAGE - Before wizard completion */
-        <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <main className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image

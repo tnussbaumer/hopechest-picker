@@ -2,6 +2,7 @@ import { WizardState, ScoringResult } from '../types/wizard';
 import { VisionTrip } from '../types';
 import { useEffect, useRef, useState } from 'react';
 import { saveFitGuide } from '../lib/api';
+import FeaturedCountryCard from './FeaturedCountryCard';
 
 interface ResultsProps {
   wizardAnswers: WizardState;
@@ -13,6 +14,10 @@ interface ResultsProps {
 const COUNTRY_DATA = {
   Guatemala: {
     imageUrl: 'https://loremflickr.com/800/400/guatemala,landscape',
+    about: 'Guatemala is located in Central America, offering accessible short-term mission opportunities. HopeChest partners with communities facing challenges including poverty, limited education access, and food insecurity. Our CarePoints provide education, nutrition, and spiritual development for vulnerable children and families.',
+    stats: [],
+    tagline: '',
+    programs: ['Education Support', 'Nutrition Programs', 'Family Development', 'Discipleship'],
     considerations: [
       'Shorter time commitment (5–6 days total)',
       'Most accessible first trip option',
@@ -22,14 +27,31 @@ const COUNTRY_DATA = {
     costRange: '$1,500–$2,200',
     language: 'Spanish',
     visionTrips: [
-      { dateRange: 'Feb 23–28', leader: 'TBD', tripId: 'guatemala-feb-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-feb-2026' },
-      { dateRange: 'Apr 13–18', leader: 'TBD', tripId: 'guatemala-apr-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-apr-2026' },
-      { dateRange: 'Jun 15–20', leader: 'TBD', tripId: 'guatemala-jun-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-jun-2026' },
-      { dateRange: 'Sep 7–12', leader: 'TBD', tripId: 'guatemala-sep-2026', registrationUrl: 'https://hopechestint.org/register/guatemala-sep-2026' },
+      { dateRange: 'Feb 23–28', leader: 'TBD', tripId: 'guatemala-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-feb26/' },
+      { dateRange: 'Apr 13–18', leader: 'TBD', tripId: 'guatemala-apr-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-apr26/' },
+      { dateRange: 'Jun 15–20', leader: 'TBD', tripId: 'guatemala-jun-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-jun26/' },
+      { dateRange: 'Sep 7–12', leader: 'TBD', tripId: 'guatemala-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-sep26/' },
     ] as VisionTrip[],
   },
   Uganda: {
     imageUrl: 'https://loremflickr.com/800/400/uganda,africa,landscape',
+    about: 'Uganda is a landlocked country located in East-Central Africa. Many children in Uganda have lost their parents to HIV/AIDS, while malaria, dehydration, and respiratory infections are the main causes of death in children under 5. Our established CarePoints serve more than 2,500 children and youth. Programs that equip communities and families to move toward self-sustainable transformation include tailoring, poultry farming, microfinance, and agricultural farming, while additionally teaching valuable life skills.',
+    stats: [
+      {
+        value: '48.5%',
+        description: "of the country's population is under 14 years old."
+      },
+      {
+        value: '34%',
+        description: "(8.5M) of girls are married before their 18th birthday."
+      },
+      {
+        value: '1.3M',
+        description: "adults are living with HIV."
+      }
+    ],
+    tagline: 'We believe the next generation can experience hope through transformational relationships.',
+    programs: ['Tailoring', 'Poultry Farming', 'Microfinance', 'Agricultural Farming', 'Vocational Training', 'Life Skills'],
     considerations: [
       'Typically requires 2–3 flight connections',
       '10-day commitment including travel time',
@@ -39,14 +61,18 @@ const COUNTRY_DATA = {
     costRange: '$1,800–$2,750',
     language: 'English',
     visionTrips: [
-      { dateRange: 'Feb 10–18', leader: 'TBD', tripId: 'uganda-feb-2026', registrationUrl: 'https://hopechestint.org/register/uganda-feb-2026' },
-      { dateRange: 'Apr 7–14', leader: 'TBD', tripId: 'uganda-apr-2026', registrationUrl: 'https://hopechestint.org/register/uganda-apr-2026' },
-      { dateRange: 'Jul 27–Aug 4', leader: 'TBD', tripId: 'uganda-jul-2026', registrationUrl: 'https://hopechestint.org/register/uganda-jul-2026' },
-      { dateRange: 'Sep 8–15', leader: 'TBD', tripId: 'uganda-sep-2026', registrationUrl: 'https://hopechestint.org/register/uganda-sep-2026' },
+      { dateRange: 'Feb 10–18', leader: 'TBD', tripId: 'uganda-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-feb26/' },
+      { dateRange: 'Apr 7–14', leader: 'TBD', tripId: 'uganda-apr-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-apr26/' },
+      { dateRange: 'Jul 27–Aug 4', leader: 'TBD', tripId: 'uganda-jul-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-jul26/' },
+      { dateRange: 'Sep 8–15', leader: 'TBD', tripId: 'uganda-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-sep26/' },
     ] as VisionTrip[],
   },
   Ethiopia: {
     imageUrl: 'https://loremflickr.com/800/400/ethiopia,africa,landscape',
+    about: 'Ethiopia is located in the Horn of Africa and is one of the oldest Christian nations in the world. HopeChest works in both Christian-majority and Muslim-majority areas, providing holistic care through CarePoints. Communities face challenges including drought, food insecurity, and limited healthcare access.',
+    stats: [],
+    tagline: '',
+    programs: ['Health Programs', 'Water Projects', 'Education Support', 'Economic Development'],
     considerations: [
       'Direct flights available from select U.S. cities',
       '10-day trip duration',
@@ -56,9 +82,9 @@ const COUNTRY_DATA = {
     costRange: '$1,800–$2,750',
     language: 'Amharic (interpreters available)',
     visionTrips: [
-      { dateRange: 'Feb 16–20', leader: 'Peter Y. & Thad S.', tripId: 'ethiopia-feb-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-feb-2026' },
-      { dateRange: 'May 6–11', leader: 'TBD', tripId: 'ethiopia-may-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-may-2026' },
-      { dateRange: 'Aug 12–17', leader: 'TBD', tripId: 'ethiopia-aug-2026', registrationUrl: 'https://hopechestint.org/register/ethiopia-aug-2026' },
+      { dateRange: 'Feb 16–20', leader: 'Peter Y. & Thad S.', tripId: 'ethiopia-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-feb26/' },
+      { dateRange: 'May 6–11', leader: 'TBD', tripId: 'ethiopia-may-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-may26/' },
+      { dateRange: 'Aug 12–17', leader: 'TBD', tripId: 'ethiopia-aug-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-aug26/' },
     ] as VisionTrip[],
   },
 };
@@ -191,10 +217,34 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
         </p>
       </div>
 
-      {/* Country Cards - Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        {scoringResults.top3.map((result, index) => {
+      {/* Featured #1 Choice - Full Width */}
+      {scoringResults.top3.length > 0 && (
+        <FeaturedCountryCard
+          country={scoringResults.top3[0].country}
+          score={scoringResults.top3[0].score}
+          reasons={scoringResults.top3[0].reasons}
+          wizardAnswers={wizardAnswers}
+          countryData={COUNTRY_DATA[scoringResults.top3[0].country as keyof typeof COUNTRY_DATA]}
+        />
+      )}
+
+      {/* Other Recommendations Header */}
+      {scoringResults.top3.length > 1 && (
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            Other Strong Options to Consider
+          </h2>
+          <p className="text-gray-600">
+            These countries also align well with your church's vision and capacity
+          </p>
+        </div>
+      )}
+
+      {/* Choices #2 and #3 - Two Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        {scoringResults.top3.slice(1).map((result, index) => {
           const countryData = COUNTRY_DATA[result.country as keyof typeof COUNTRY_DATA];
+          const actualIndex = index + 1; // This is now the 2nd or 3rd item
           
           return (
             <div
@@ -202,7 +252,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
               className="flex flex-col h-full bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow"
             >
               {/* Hero Image with Ranking */}
-              <div className="relative h-48 overflow-hidden flex-shrink-0">
+              <div className="relative h-56 overflow-hidden flex-shrink-0">
                 <img
                   src={countryData.imageUrl}
                   alt={result.country}
@@ -213,8 +263,8 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                 
                 {/* Country Name and Ranking */}
                 <div className="absolute bottom-4 left-4 right-4">
-                  <div className="inline-block bg-brand-teal text-white px-3 py-1 rounded-full text-xs font-semibold mb-2">
-                    #{index + 1} Recommendation
+                  <div className="inline-block bg-brand-orange text-white px-3 py-1 rounded-full text-xs font-semibold mb-2">
+                    #{actualIndex + 1} Recommendation
                   </div>
                   <h2 className="text-3xl font-bold text-white">
                     {result.country}
