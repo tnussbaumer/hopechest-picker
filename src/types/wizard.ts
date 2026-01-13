@@ -19,18 +19,24 @@ export type PartnershipPosture = 'own_community' | 'partner_with_others' | 'flex
 
 export type MobilizationOption =
   | 'students_young_adults'
-  | 'families_with_kids'
+  | 'families_with_children'
   | 'teachers_educators'
   | 'medical_professionals'
   | 'adults_seniors'
-  | 'broad_church_wide';
+  | 'broad_church_wide'
+  | 'small_groups_sunday_school'
+  | 'construction_teams'
+  | 'spanish_speakers';
 
 export type ImpactDNA =
   | 'education_schools'
   | 'health_medical'
-  | 'church_leadership'
+  | 'local_church_discipleship'
   | 'community_transformation'
-  | 'frontier_hard_to_reach';
+  | 'frontier_hard_to_reach'
+  | 'youth_development_leadership'
+  | 'friendship_model'
+  | 'carepoint_graduation';
 
 export type FrontierType =
   | 'minimal_infrastructure'
@@ -65,8 +71,8 @@ export interface WizardState {
   mobilization?: MobilizationOption[];
   spanishToggle?: boolean;
 
-  // Screen 6 - Impact DNA (future)
-  impactDNA?: ImpactDNA;
+  // Screen 6 - Impact DNA (future) - now supports multiple selections
+  impactDNA?: ImpactDNA[];
   frontierType?: FrontierType;
 
   // Screen 7 - Other Factors (future)
