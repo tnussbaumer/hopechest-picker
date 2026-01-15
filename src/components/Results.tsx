@@ -32,6 +32,11 @@ const COUNTRY_DATA = {
       { dateRange: 'Jun 15–20', leader: 'TBD', tripId: 'guatemala-jun-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-jun26/' },
       { dateRange: 'Sep 7–12', leader: 'TBD', tripId: 'guatemala-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-sep26/' },
     ] as VisionTrip[],
+    excursions: [
+      { name: 'Coffee Farm Tour', description: 'Explore a local coffee farm and learn about the bean-to-cup process.', imageUrl: '/images/guatemala-excursion-coffee.jpg' },
+      { name: 'Volcano Hike', description: 'Hike an active volcano and witness breathtaking views.', imageUrl: '/images/guatemala-excursion-volcano.jpg' },
+      { name: 'Lake Atitlan Boat Trip', description: 'Discover the serene beauty of Lake Atitlan and its surrounding villages.', imageUrl: '/images/guatemala-excursion-golf.jpg' },
+    ],
   },
   Uganda: {
     imageUrl: 'https://loremflickr.com/800/400/uganda,africa,landscape',
@@ -274,7 +279,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
 
               {/* Card Content - Flex column to push vision trips to bottom */}
               <div className="p-6 flex-1 flex flex-col">
-                {/* Why It Could Be a Good Fit */}
+                {/* Why It Could Be a Good Fit */} 
                 <div className="mb-4">
                   <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                     <span className="text-brand-teal">✓</span>
@@ -290,7 +295,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                   </ul>
                 </div>
 
-                {/* Things to Consider */}
+                {/* Things to Consider */} 
                 <div className="mb-4 bg-blue-50 rounded-lg p-4">
                   <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1">
                     <span className="text-blue-600">ℹ️</span>
@@ -306,7 +311,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                   </ul>
                 </div>
 
-                {/* Vision Trip Snapshot */}
+                {/* Vision Trip Snapshot */} 
                 <div className="bg-brand-teal-bg rounded-lg p-4 mb-4">
                   <h3 className="text-sm font-bold text-brand-teal-dark mb-3">
                     Vision Trip Snapshot
@@ -323,7 +328,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                   </div>
                 </div>
 
-                {/* 2026 Vision Trips - Pushed to bottom with mt-auto */}
+                {/* 2026 Vision Trips - Pushed to bottom with mt-auto */} 
                 <div className="mt-auto pt-4 border-t border-gray-200">
                   <h3 className="text-sm font-bold text-gray-800 mb-3">
                     2026 Vision Trips
@@ -350,7 +355,7 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
         })}
       </div>
 
-      {/* Footer Actions */}
+      {/* Footer Actions */} 
       <div className="text-center space-y-6 pb-12">
         <div className="bg-white rounded-lg p-6 shadow-md max-w-2xl mx-auto">
           <p className="text-gray-700 mb-2">
