@@ -9,7 +9,7 @@ export const countries: Country[] = [
     name: 'Guatemala',
     region: 'Central America',
     ministryType: 'Community-to-Community',
-    imgUrl: 'https://loremflickr.com/800/600/guatemala,landscape',
+    imgUrl: '/images/guatemala-hero.jpg',
     tags: ['Active', 'Partner', 'Youth Programs'],
     visionTrips: [
       {
