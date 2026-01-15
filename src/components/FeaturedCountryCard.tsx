@@ -2,10 +2,82 @@ function ExcursionsSection({
   excursions,
   country,
 }: {
-  excursions?: { name: string; description: string; imageUrl: string }[];
+  excursions?: { 
+    name: string; 
+    description: string; 
+    imageUrl: string;
+    links?: { label: string; href: string }[];
+    highlights?: string[];
+    galleryImages?: string[];
+  }[];
   country: string;
 }) {
   if (excursions && excursions.length > 0) {
+    // Special layout for single excursion with gallery
+    if (excursions.length === 1 && excursions[0].galleryImages) {
+      const excursion = excursions[0];
+      return (
+        <div className="bg-gradient-to-br from-brand-orange/10 to-white p-8 rounded-2xl border-2 border-brand-orange/20">
+          <h4 className="text-2xl font-bold text-brand-teal-dark mb-4">
+            Optional Excursions
+          </h4>
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Large main image */}
+              <img
+                src={excursion.imageUrl}
+                alt={excursion.name}
+                className="w-full h-64 object-cover rounded-lg shadow-md"
+              />
+              {/* Gallery images grid */}
+              <div className="grid grid-cols-3 gap-2">
+                {excursion.galleryImages?.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`${excursion.name} ${idx + 1}`}
+                    className="w-full h-20 object-cover rounded-lg shadow-md"
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h5 className="font-bold text-gray-800 mb-2 text-xl">{excursion.name}</h5>
+              <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">{excursion.description}</p>
+              {excursion.highlights && excursion.highlights.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-sm font-semibold text-gray-800 mb-1">Highlights:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {excursion.highlights.map((highlight, idx) => (
+                      <li key={idx} className="text-sm text-gray-700">
+                        <strong>{highlight}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {excursion.links && excursion.links.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {excursion.links.map((link, idx) => (
+                    <a
+                      key={idx}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-teal hover:text-brand-teal-dark font-semibold underline text-sm"
+                    >
+                      Learn more about {link.label} →
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Standard grid layout for multiple excursions
     return (
       <div className="bg-gradient-to-br from-brand-orange/10 to-white p-8 rounded-2xl border-2 border-brand-orange/20">
         <h4 className="text-2xl font-bold text-brand-teal-dark mb-4">
@@ -20,7 +92,34 @@ function ExcursionsSection({
                 className="w-full h-32 object-cover rounded-lg mb-3 shadow-md"
               />
               <h5 className="font-bold text-gray-800 mb-1">{excursion.name}</h5>
-              <p className="text-sm text-gray-700">{excursion.description}</p>
+              <p className="text-sm text-gray-700 mb-2">{excursion.description}</p>
+              {excursion.highlights && excursion.highlights.length > 0 && (
+                <div className="mb-2 text-left">
+                  <p className="text-xs font-semibold text-gray-800 mb-1">Highlights:</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {excursion.highlights.map((highlight, hIdx) => (
+                      <li key={hIdx} className="text-xs text-gray-700">
+                        <strong>{highlight}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {excursion.links && excursion.links.length > 0 && (
+                <div className="space-y-1">
+                  {excursion.links.map((link, lIdx) => (
+                    <a
+                      key={lIdx}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-brand-teal hover:text-brand-teal-dark font-semibold underline text-xs"
+                    >
+                      {link.label} →
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -58,7 +157,14 @@ interface CountryData {
   costRange: string;
   language: string;
   visionTrips: VisionTrip[];
-  excursions?: { name: string; description: string; imageUrl: string; }[];
+  excursions?: { 
+    name: string; 
+    description: string; 
+    imageUrl: string;
+    links?: { label: string; href: string }[];
+    highlights?: string[];
+    galleryImages?: string[];
+  }[];
 }
 
 interface FeaturedCountryCardProps {
@@ -78,10 +184,6 @@ export default function FeaturedCountryCard({
 }: FeaturedCountryCardProps) {
   const personalizedSections = generatePersonalizedSections(country, wizardAnswers);
   const personalizedGreeting = generatePersonalizedGreeting(wizardAnswers, country);
-  
-  // Debug: Log excursions data
-  console.log('FeaturedCountryCard - Country:', country);
-  console.log('FeaturedCountryCard - Excursions:', countryData.excursions);
 
   return (
     <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-12">
@@ -121,8 +223,8 @@ export default function FeaturedCountryCard({
           <div className="max-w-3xl mx-auto">
             <div className="bg-brand-teal-bg border-l-4 border-brand-teal p-6 rounded-r-lg">
               <p className="text-gray-700 leading-relaxed">
-                Based on your church\"s size, ministry DNA, and vision, we believe {country} offers 
-                the most compelling partnership opportunity. Here\"s why this could be a transformative 
+                Based on your church&apos;s size, ministry DNA, and vision, we believe {country} offers 
+                the most compelling partnership opportunity. Here&apos;s why this could be a transformative 
                 fit for {wizardAnswers.churchName}:
               </p>
             </div>
@@ -131,7 +233,7 @@ export default function FeaturedCountryCard({
 
         {/* Why It\"s a Good Fit - Original Reasons */} 
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
             <span className="text-3xl text-brand-teal">✓</span>
             Why This Partnership Fits Your Church
           </h3>
@@ -183,7 +285,7 @@ export default function FeaturedCountryCard({
         {country === "Uganda" && ( // Only show for Uganda
           <div className="mb-12 bg-gradient-to-br from-gray-50 to-white p-8 md:p-12 rounded-2xl border-2 border-gray-100">
             <h3 className="text-3xl font-bold text-center text-brand-teal-dark mb-8">
-              Understanding Uganda\"s Need
+              Understanding Uganda&apos;s Need
             </h3>
             
             {/* Stats Grid */} 
@@ -260,7 +362,9 @@ export default function FeaturedCountryCard({
                   src={country === "Guatemala" 
                     ? "/images/guatemala-transformation.jpg" 
                     : country === "Uganda"
-                    ? "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&h=400&fit=crop"
+                    ? "/images/Uganda-trasnformation1.png"
+                    : country === "Ethiopia"
+                    ? "/images/Ethiopia-transformation1.jpeg"
                     : "https://images.unsplash.com/photo-1584282786940-2e4cc8e13fd9?w=600&h=400&fit=crop"
                   }
                   alt={`${country} Community`}
@@ -274,7 +378,7 @@ export default function FeaturedCountryCard({
                   Encounter Community-to-Community Transformation
                 </h4>
                 <p className="text-gray-700 leading-relaxed">
-                  During your visit, you\"ll witness transformation in action:
+                  During your visit, you&apos;ll witness transformation in action:
                 </p>
                 <ul className="space-y-2">
                   {[ 

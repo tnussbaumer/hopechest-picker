@@ -13,7 +13,7 @@ interface ResultsProps {
 // Travel facts, images, and vision trips for each country
 const COUNTRY_DATA = {
   Guatemala: {
-    imageUrl: 'https://loremflickr.com/800/400/guatemala,landscape',
+    imageUrl: '/images/guatemala-hero.jpg',
     about: 'Guatemala is located in Central America, offering accessible short-term mission opportunities. HopeChest partners with communities facing challenges including poverty, limited education access, and food insecurity. Our CarePoints provide education, nutrition, and spiritual development for vulnerable children and families.',
     stats: [],
     tagline: '',
@@ -39,7 +39,7 @@ const COUNTRY_DATA = {
     ],
   },
   Uganda: {
-    imageUrl: 'https://loremflickr.com/800/400/uganda,africa,landscape',
+    imageUrl: '/images/Uganda-hero.png',
     about: 'Uganda is a landlocked country located in East-Central Africa. Many children in Uganda have lost their parents to HIV/AIDS, while malaria, dehydration, and respiratory infections are the main causes of death in children under 5. Our established CarePoints serve more than 2,500 children and youth. Programs that equip communities and families to move toward self-sustainable transformation include tailoring, poultry farming, microfinance, and agricultural farming, while additionally teaching valuable life skills.',
     stats: [
       {
@@ -71,9 +71,19 @@ const COUNTRY_DATA = {
       { dateRange: 'Jul 27–Aug 4', leader: 'TBD', tripId: 'uganda-jul-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-jul26/' },
       { dateRange: 'Sep 8–15', leader: 'TBD', tripId: 'uganda-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-sep26/' },
     ] as VisionTrip[],
+    excursions: [
+      { 
+        name: 'Murchison Falls Safari', 
+        description: 'Located in the heart of Uganda, Murchison Falls National Park is a wildlife enthusiast&apos;s paradise, offering an opportunity for you to encounter the power of God&apos;s creation and the beauty of the African wilderness up close.\n\nMurchison Falls National Park is the largest Uganda safari park and one of the most visited parks in Uganda. Home to prolific wildlife and one of the most powerful stretches of white water in the world, its majestic waterfall is where the Nile river explodes through a narrow gorge and cascades spectacularly downwards!\n\nRide through the park in an open-top 4×4 vehicle, allowing for unobstructed views of the incredible wildlife. Prepare to be captivated by the sight of majestic elephants roaming the savannah, graceful giraffes stretching their necks to graze on acacia leaves, and playful lions basking in the golden African sun.', 
+        imageUrl: '/images/Uganda-safar1.jpg',
+        galleryImages: ['/images/Uganda-safari2.png', '/images/Uganda-safari3.png', '/images/Uganda-safari4.png'],
+        links: [{ label: 'Murchison Falls National Park', href: 'https://www.go2africa.com/destinations/murchison-falls/why-go' }],
+        highlights: ['Murchison Falls National Park']
+      }
+    ],
   },
   Ethiopia: {
-    imageUrl: 'https://loremflickr.com/800/400/ethiopia,africa,landscape',
+    imageUrl: '/images/Ethiopia-hero.png',
     about: 'Ethiopia is located in the Horn of Africa and is one of the oldest Christian nations in the world. HopeChest works in both Christian-majority and Muslim-majority areas, providing holistic care through CarePoints. Communities face challenges including drought, food insecurity, and limited healthcare access.',
     stats: [],
     tagline: '',
@@ -91,6 +101,22 @@ const COUNTRY_DATA = {
       { dateRange: 'May 6–11', leader: 'TBD', tripId: 'ethiopia-may-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-may26/' },
       { dateRange: 'Aug 12–17', leader: 'TBD', tripId: 'ethiopia-aug-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-aug26/' },
     ] as VisionTrip[],
+    excursions: [
+      { 
+        name: 'Haile Resort', 
+        description: 'This Vision Trip includes exciting excursions throughout Southern Ethiopia, starting in the charming town of Arba Minch, known for its "40-Springs" and stunning surroundings. During your stay at the Haile Resort, you will enjoy breathtaking views of the twin lakes of Abaya and Chamo, with the iconic &apos;Bridge of God&apos; connecting them.', 
+        imageUrl: '/images/Ethiopia-excursion-Haile.jpg',
+        links: [{ label: 'Haile Resort', href: 'https://hailehotelsandresorts.com/arbaminch_resort/' }],
+        highlights: ['Haile Resort']
+      },
+      { 
+        name: 'Dorze Village', 
+        description: 'You&apos;ll also have the chance to explore the Dorze Village in the Gamo Highlands, famous for its distinctive hut architecture resembling beehives and elephants. You&apos;ll have the opportunity to experience the rich culture of the Dorze people, experiencing their traditions and warm hospitality!', 
+        imageUrl: '/images/Ethiopia-excursion-Dorze.jpg',
+        links: [{ label: 'Dorze Village', href: 'https://www.tripadvisor.com/Attraction_Review-g776853-d4814271-Reviews-Dorze_Village-Arba_Minch_Southern_Nations_Nationalities_and_People_s_Region.html' }],
+        highlights: ['Dorze Village']
+      }
+    ],
   },
 };
 
