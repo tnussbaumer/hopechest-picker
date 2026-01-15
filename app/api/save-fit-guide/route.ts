@@ -81,34 +81,23 @@ export async function POST(request: NextRequest) {
         reasons: r.reasons,
       }));
 
-      // ===== RESEND SANDBOX MODE - STRICT COMPLIANCE =====
-      // ===== RESEND SANDBOX MODE - STRICT COMPLIANCE =====
-      // For production, these should be environment variables (e.g., process.env.INTERNAL_EMAIL_TO)
-      const SANDBOX_FROM = 'onboarding@resend.dev'; // Strict sandbox format (no display name)
-      const INTERNAL_EMAIL_TO = 'tnussbomber@gmail.com'; // Internal recipient
-      // ==================================================
+      // Email configuration from environment variables
+      const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@missionvox.ai';
+      const INTERNAL_EMAIL_TO = process.env.INTERNAL_EMAIL_TO || 'tim@missionvox.ai';
+      const pastorEmail = wizardState.email;
 
-      // User's email from the wizard submission
-      const USER_EMAIL_FROM_WIZARD = wizardState.email; 
-
-      // ===== DEBUGGING IN SANDBOX MODE =====
-      // In Resend Sandbox Mode, emails can ONLY be sent to verified email addresses.
-      // For testing, we'll temporarily send both emails to the INTERNAL_EMAIL_TO.
-      // In a production environment with verified domains, USER_EMAIL_FROM_WIZARD would be used directly.
-      const ACTUAL_USER_EMAIL_FOR_SANDBOX_TESTING = INTERNAL_EMAIL_TO; 
-      // =====================================
-
-      // Check API key exists
+      // Logging for debugging
       console.log('🔑 Resend API Key:', process.env.RESEND_API_KEY ? 'Key exists ✓' : '❌ MISSING KEY');
-      console.log('📧 Email configuration for Internal Alert:');
-      console.log('   From:', SANDBOX_FROM);
-      console.log('   To (Internal):', INTERNAL_EMAIL_TO);
+      console.log('📧 Email configuration:');
+      console.log('   From:', EMAIL_FROM);
+      console.log('   Internal recipient:', INTERNAL_EMAIL_TO);
+      console.log('   Pastor/User recipient:', pastorEmail);
 
-      // Send internal alert
-      console.log('\n📨 Attempting to send Internal Alert email to:', INTERNAL_EMAIL_TO, '...');
+      // Send internal alert email
+      console.log('\n📨 Sending Internal Alert email to:', INTERNAL_EMAIL_TO);
       const internalResult = await resend.emails.send({
-        from: SANDBOX_FROM,
-        to: INTERNAL_EMAIL_TO, // Internal recipient
+        from: EMAIL_FROM,
+        to: INTERNAL_EMAIL_TO,
         subject: `New Vision Trip Lead: ${wizardState.churchName}`,
         react: InternalAlert({
           churchName: wizardState.churchName,
@@ -121,20 +110,16 @@ export async function POST(request: NextRequest) {
 
       console.log('✅ Internal Alert Response:', JSON.stringify(internalResult, null, 2));
       
-      // Check for errors in response
       if (internalResult.error) {
         console.error('❌ Internal Alert Error:', internalResult.error);
         throw new Error(`Internal Alert failed: ${JSON.stringify(internalResult.error)}`);
       }
 
-      // Send pastor confirmation email to the user/pastor's email (or verified sandbox test email)
-      console.log('\n📨 Attempting to send Pastor Confirmation email.');
-      console.log('   Original User Email from Wizard:', USER_EMAIL_FROM_WIZARD);
-      console.log('   Sending to (for Sandbox Testing):', ACTUAL_USER_EMAIL_FOR_SANDBOX_TESTING);
-
+      // Send pastor confirmation email
+      console.log('\n📨 Sending Pastor Confirmation email to:', pastorEmail);
       const pastorResult = await resend.emails.send({
-        from: SANDBOX_FROM,
-        to: ACTUAL_USER_EMAIL_FOR_SANDBOX_TESTING, // Temporarily using verified email for sandbox testing
+        from: EMAIL_FROM,
+        to: pastorEmail,
         subject: 'Your HopeChest Partnership Guide',
         react: PastorResults({
           contactName: wizardState.contactName,
@@ -144,13 +129,14 @@ export async function POST(request: NextRequest) {
 
       console.log('✅ Pastor Confirmation Response:', JSON.stringify(pastorResult, null, 2));
       
-      // Check for errors in response
       if (pastorResult.error) {
         console.error('❌ Pastor Confirmation Error:', pastorResult.error);
         throw new Error(`Pastor Confirmation failed: ${JSON.stringify(pastorResult.error)}`);
       }
 
-      console.log('\n✨ All emails sent successfully. Internal to:', INTERNAL_EMAIL_TO, ' and User to (for Sandbox Testing):', ACTUAL_USER_EMAIL_FOR_SANDBOX_TESTING);
+      console.log('\n✨ All emails sent successfully!');
+      console.log('   Internal alert sent to:', INTERNAL_EMAIL_TO);
+      console.log('   Pastor confirmation sent to:', pastorEmail);
     } catch (emailError) {
       // Log email error but don't fail the overall operation
       console.error('Error sending emails:', emailError);

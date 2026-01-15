@@ -25,7 +25,7 @@ interface PastorResultsProps {
 export const PastorResults = ({
   contactName,
   topMatches,
-  scheduleUrl = 'https://hopechest.org/2026-schedule',
+  scheduleUrl = 'https://www.hopechest.org/vision-trips/',
 }: PastorResultsProps) => {
   const firstName = contactName.split(' ')[0];
   
