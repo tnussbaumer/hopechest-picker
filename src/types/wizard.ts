@@ -26,12 +26,12 @@ export type MobilizationOption =
   | 'broad_church_wide'
   | 'small_groups_sunday_school'
   | 'construction_teams'
-  | 'spanish_speakers';
+  | 'other';
 
 export type ImpactDNA =
-  | 'education_schools'
-  | 'health_medical'
-  | 'local_church_discipleship'
+  | 'evangelism_discipleship'
+  | 'education_medical'
+  | 'church_planting'
   | 'community_transformation'
   | 'frontier_hard_to_reach'
   | 'youth_development_leadership'
@@ -69,7 +69,7 @@ export interface WizardState {
 
   // Screen 5 - Mobilization (future)
   mobilization?: MobilizationOption[];
-  spanishToggle?: boolean;
+  mobilizationOther?: string; // Custom text when 'other' is selected
 
   // Screen 6 - Impact DNA (future) - now supports multiple selections
   impactDNA?: ImpactDNA[];
