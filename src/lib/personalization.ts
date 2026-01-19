@@ -15,7 +15,7 @@ export function generatePersonalizedSections(
   const firstName = contactName.split(' ')[0];
 
   // Generate sections based on Impact DNA (now supports multiple selections)
-  if (impactDNA && impactDNA.includes('education_schools')) {
+  if (impactDNA && impactDNA.includes('education_medical')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Education & Schools Partnership',
@@ -37,7 +37,7 @@ export function generatePersonalizedSections(
     }
   }
   
-  if (impactDNA && impactDNA.includes('health_medical')) {
+  if (impactDNA && impactDNA.includes('education_medical')) {
     if (countryName === 'Uganda') {
       sections.push({
         title: 'Medical & Healthcare Ministry',
@@ -153,7 +153,7 @@ function generateMobilizationContent(
     broad_church_wide: 'Church-wide',
     small_groups_sunday_school: 'Small groups and Sunday school classes',
     construction_teams: 'Construction teams',
-    spanish_speakers: 'Spanish speakers'
+    other: 'Other groups'
   };
 
   const mobilizationDescriptions: Record<string, Partial<Record<MobilizationOption, string>>> = {
@@ -165,8 +165,7 @@ function generateMobilizationContent(
       adults_seniors: 'Adult and senior teams bring wisdom, life experience, and encouragement to Ugandan communities. Whether supporting income-generating projects, mentoring caregivers, or building relationships with community leaders, your maturity and perspective are invaluable gifts.',
       broad_church_wide: 'Church-wide mobilization to Uganda creates unity and shared purpose across all ages. From children to seniors, everyone finds meaningful ways to serve—whether through building projects, VBS programs, home visits, or community celebrations.',
       small_groups_sunday_school: 'Small groups and Sunday school classes find deep connection through shared Uganda experiences. These cohesive teams build lasting bonds while serving together, creating stories and relationships that continue long after returning home.',
-      construction_teams: 'Construction teams bring practical skills to Uganda, building classrooms, water systems, and community infrastructure. Your hands-on work creates tangible improvements that serve communities for years to come.',
-      spanish_speakers: 'While Spanish isn\'t spoken in Uganda, your language skills demonstrate cross-cultural flexibility and your team will connect through universal language of service and compassion.'
+      construction_teams: 'Construction teams bring practical skills to Uganda, building classrooms, water systems, and community infrastructure. Your hands-on work creates tangible improvements that serve communities for years to come.'
     },
     Ethiopia: {
       students_young_adults: 'Young adults connect deeply with Ethiopian youth through sports, music, and cultural exchange. Ethiopia\'s rich history and diverse communities provide transformative cross-cultural experiences that shape lifelong global perspectives.',
@@ -176,8 +175,7 @@ function generateMobilizationContent(
       adults_seniors: 'Mature believers bring encouragement, wisdom, and partnership to Ethiopian communities. Your life experience and spiritual depth offer invaluable mentorship to local leaders and community members.',
       broad_church_wide: 'Ethiopia welcomes diverse teams where every age and skill finds meaningful engagement—from children\'s programs to construction, from prayer ministry to agricultural support.',
       small_groups_sunday_school: 'Tight-knit groups experience profound transformation together in Ethiopia. Shared experiences deepen existing relationships while creating new ministry momentum back home.',
-      construction_teams: 'Construction expertise is highly valued in Ethiopia for building schools, water systems, and community facilities. Your skilled work addresses critical infrastructure needs.',
-      spanish_speakers: 'Your cross-cultural experience and language skills translate to excellent ministry partnerships in Ethiopia, where English and local languages are spoken.'
+      construction_teams: 'Construction expertise is highly valued in Ethiopia for building schools, water systems, and community facilities. Your skilled work addresses critical infrastructure needs.'
     },
     Guatemala: {
       students_young_adults: 'Guatemala\'s proximity and accessibility make it ideal for student trips. Young adults engage through sports, VBS, construction projects, and relationship-building that often ignites passion for missions.',
@@ -187,8 +185,7 @@ function generateMobilizationContent(
       adults_seniors: 'Mature teams bring construction skills, life wisdom, and encouragement. Guatemala\'s shorter trips accommodate various physical abilities while providing meaningful service opportunities.',
       broad_church_wide: 'Guatemala\'s accessibility makes church-wide trips practical and impactful. Multiple generations serve together, creating shared experiences that unite your congregation in mission.',
       small_groups_sunday_school: 'Guatemala is perfect for small group and Sunday school trips. Shorter travel time and lower costs make it accessible while creating tight-knit team experiences that deepen community.',
-      construction_teams: 'Construction teams thrive in Guatemala with accessible building projects, reasonable costs, and immediate visible impact. Many teams return annually to complete multi-phase projects.',
-      spanish_speakers: 'Your Spanish speakers will absolutely thrive in Guatemala! Direct communication creates deeper relationships, richer cultural exchange, and multiplication of ministry impact through language connection.'
+      construction_teams: 'Construction teams thrive in Guatemala with accessible building projects, reasonable costs, and immediate visible impact. Many teams return annually to complete multi-phase projects.'
     }
   };
 

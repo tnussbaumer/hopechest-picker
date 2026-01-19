@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       // Partnership & Mobilization
       partnership_posture: wizardState.partnershipPosture || null,
       mobilization: wizardState.mobilization || null,
-      spanish_toggle: wizardState.spanishToggle || false,
+      mobilization_other: wizardState.mobilizationOther || null,
       
       // Impact DNA
       impact_dna: wizardState.impactDNA || null,
