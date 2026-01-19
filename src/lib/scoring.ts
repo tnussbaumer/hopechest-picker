@@ -78,13 +78,12 @@ export function calculateCountryScores(answers: WizardState): ScoringResult {
     applyPartnershipScoring(answers.partnershipPosture, scores, reasons);
   }
 
-  // 5. MOBILIZATION & SPANISH TOGGLE (future - Phase 2)
+  // 5. MOBILIZATION & OTHER TEXT ANALYSIS (future - Phase 2)
   if (answers.mobilization) {
     applyMobilizationScoring(answers.mobilization, scores, reasons);
   }
-  if (answers.spanishToggle) {
-    scores.Guatemala += 5;
-    reasons.Guatemala.push('Your Spanish speakers will thrive here');
+  if (answers.mobilizationOther) {
+    applyMobilizationOtherScoring(answers.mobilizationOther, scores, reasons);
   }
 
   // 6. IMPACT DNA & FRONTIER (future - Phase 2) - now supports multiple selections
@@ -335,6 +334,70 @@ function applyMobilizationScoring(
 }
 
 /**
+ * Mobilization "Other" text analysis scoring
+ * Intelligently scores based on keywords in the custom text input
+ */
+function applyMobilizationOtherScoring(
+  otherText: string,
+  scores: Record<string, number>,
+  reasons: Record<string, string[]>
+) {
+  const text = otherText.toLowerCase();
+  
+  // Guatemala-related keywords
+  const guatemalaKeywords = [
+    'spanish', 'español', 'hispanic', 'latino', 'latina', 'latinx',
+    'latin america', 'central america', 'guatemala', 'coffee'
+  ];
+  
+  // Uganda-related keywords
+  const ugandaKeywords = [
+    'uganda', 'ugandan', 'swahili', 'safari', 'east africa',
+    'african', 'africa'
+  ];
+  
+  // Ethiopia-related keywords
+  const ethiopiaKeywords = [
+    'ethiopia', 'ethiopian', 'amharic', 'muslim', 'horn of africa',
+    'african', 'africa'
+  ];
+  
+  // Check for Guatemala keywords
+  const hasGuatemalaMatch = guatemalaKeywords.some(keyword => text.includes(keyword));
+  if (hasGuatemalaMatch) {
+    scores.Guatemala += 10;
+    if (text.includes('spanish') || text.includes('español')) {
+      reasons.Guatemala.push('Spanish-speaking environment perfect for your group');
+    }
+  }
+  
+  // Check for Uganda keywords
+  const hasUgandaMatch = ugandaKeywords.some(keyword => text.includes(keyword));
+  if (hasUgandaMatch) {
+    scores.Uganda += 10;
+    if (text.includes('english')) {
+      reasons.Uganda.push('English fluency makes this ideal for your group');
+    }
+  }
+  
+  // Check for Ethiopia keywords
+  const hasEthiopiaMatch = ethiopiaKeywords.some(keyword => text.includes(keyword));
+  if (hasEthiopiaMatch) {
+    scores.Ethiopia += 10;
+    if (text.includes('muslim')) {
+      reasons.Ethiopia.push('Unique ministry opportunities in Muslim-majority areas');
+    }
+  }
+  
+  // If "african" or "africa" mentioned but not specific country, boost both African countries
+  if ((text.includes('african') || text.includes('africa')) && 
+      !text.includes('uganda') && !text.includes('ethiopia')) {
+    scores.Uganda += 5;
+    scores.Ethiopia += 5;
+  }
+}
+
+/**
  * Impact DNA scoring (Phase 2)
  */
 function applyImpactDNAScoring(
@@ -359,13 +422,23 @@ function applyImpactDNAScoring(
       scores.Uganda += 2;
       scores.Ethiopia += 2;
     }
-  } else if (dna === 'church_leadership') {
+  } else if (dna === 'evangelism_discipleship') {
+    // All countries have strong evangelism/discipleship focus
+    scores.Guatemala += 5;
     scores.Uganda += 5;
     scores.Ethiopia += 5;
-    reasons.Uganda.push('Strong leadership development opportunities');
-    reasons.Ethiopia.push('Partner with local church leaders');
+  } else if (dna === 'church_planting') {
+    // Church planting opportunities vary
+    scores.Uganda += 8;
+    scores.Ethiopia += 8;
+    scores.Guatemala += 3;
+  } else if (dna === 'education_medical') {
+    // Education and medical needs benefit all countries
+    scores.Guatemala += 5;
+    scores.Uganda += 5;
+    scores.Ethiopia += 5;
   } else {
-    // Education, health, community transformation benefit all
+    // Community transformation, youth development, etc. benefit all
     scores.Guatemala += 5;
     scores.Uganda += 5;
     scores.Ethiopia += 5;
@@ -409,8 +482,8 @@ function addContextualReasons(
     if (currentReasons.length < 6 && answers.impactDNA.includes('community_transformation')) {
       reasons[topCountry].push('Holistic approach addresses root causes, not just symptoms');
     }
-    if (currentReasons.length < 6 && answers.impactDNA.includes('education_schools')) {
-      reasons[topCountry].push('Education programs create lasting generational change');
+    if (currentReasons.length < 6 && answers.impactDNA.includes('education_medical')) {
+      reasons[topCountry].push('Education and medical programs create lasting community change');
     }
     if (currentReasons.length < 6 && answers.impactDNA.includes('youth_development_leadership')) {
       reasons[topCountry].push('Youth leadership development multiplies long-term impact');
@@ -475,9 +548,12 @@ function applyTieBreaking(scores: Record<string, number>, answers: WizardState) 
         }
       }
       
-      // Spanish toggle favors Guatemala when it's in top 2
-      if (answers.spanishToggle && (top1 === 'Guatemala' || top2 === 'Guatemala')) {
-        scores.Guatemala += 3;
+      // If mobilizationOther contains Spanish-related keywords, favor Guatemala when it's in top 2
+      if (answers.mobilizationOther && (top1 === 'Guatemala' || top2 === 'Guatemala')) {
+        const text = answers.mobilizationOther.toLowerCase();
+        if (text.includes('spanish') || text.includes('español') || text.includes('hispanic')) {
+          scores.Guatemala += 3;
+        }
       }
     }
   }

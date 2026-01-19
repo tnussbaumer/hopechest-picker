@@ -59,7 +59,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   
   // Screen 5 - Mobilization
   const [mobilization, setMobilization] = useState<MobilizationOption[]>([]);
-  const [spanishToggle, setSpanishToggle] = useState(false);
+  const [mobilizationOther, setMobilizationOther] = useState('');
   
   // Screen 5 - Impact DNA (now supports multiple selections)
   const [impactDNA, setImpactDNA] = useState<ImpactDNA[]>([]);
@@ -92,7 +92,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
         englishImportance: sliderToImportance(englishSlider),
         partnershipPosture,
         mobilization: mobilization.length > 0 ? mobilization : undefined,
-        spanishToggle: mobilization.includes('spanish_speakers') || undefined,
+        mobilizationOther: mobilization.includes('other') && mobilizationOther ? mobilizationOther : undefined,
         impactDNA: impactDNA.length > 0 ? impactDNA : undefined,
         frontierType: impactDNA.includes('frontier_hard_to_reach') && frontierType ? frontierType : undefined,
       };
@@ -123,7 +123,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
     setEnglishSlider(50);
     setPartnershipPosture('own_community');
     setMobilization([]);
-    setSpanishToggle(false);
+    setMobilizationOther('');
     setImpactDNA([]);
     setFrontierType('');
     onClose();
@@ -481,7 +481,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                       { value: 'broad_church_wide', label: 'Broad church-wide' },
                       { value: 'small_groups_sunday_school', label: 'Small Groups/Sunday School Classes' },
                       { value: 'construction_teams', label: 'Construction Teams' },
-                      { value: 'spanish_speakers', label: 'Spanish Speakers' },
+                      { value: 'other', label: 'Other' },
                     ].map((option) => {
                       const isSelected = mobilization.includes(option.value as MobilizationOption);
                       const isDisabled = !isSelected && mobilization.length >= 4;
@@ -492,6 +492,9 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                           onClick={() => {
                             if (isSelected) {
                               setMobilization(mobilization.filter(m => m !== option.value));
+                              if (option.value === 'other') {
+                                setMobilizationOther('');
+                              }
                             } else if (mobilization.length < 4) {
                               setMobilization([...mobilization, option.value as MobilizationOption]);
                             }
@@ -524,6 +527,22 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                       Maximum 4 selections reached
                     </p>
                   )}
+                  
+                  {/* Conditional Other Text Input */}
+                  {mobilization.includes('other') && (
+                    <div className="mt-4 pl-4 border-l-4 border-brand-teal-light">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Please specify the group you want to mobilize:
+                      </label>
+                      <input
+                        type="text"
+                        value={mobilizationOther}
+                        onChange={(e) => setMobilizationOther(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-brand-teal focus:outline-none"
+                        placeholder="e.g., Spanish speakers, Business professionals, etc."
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -541,13 +560,14 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    What kind of impact stories are you hoping your church can tell? (Select all that apply)
+                  <label className="block text-2xl font-semibold text-gray-700 mb-3">
+                    What aligns most with your vision for global missions? (Check all that apply)
                   </label>
                   <div className="space-y-3">
                     {[
-                      { value: 'education_schools', label: 'Education / schools / kids thriving' },
-                      { value: 'health_medical', label: 'Health / medical support' },
+                      { value: 'evangelism_discipleship', label: 'Evangelism/Discipleship' },
+                      { value: 'education_medical', label: 'Education/Medical Needs of Community' },
+                      { value: 'church_planting', label: 'Church Planting' },
                       { value: 'community_transformation', label: 'Community transformation / long-term development' },
                       { value: 'frontier_hard_to_reach', label: 'Frontier / hard-to-reach communities' },
                       { value: 'youth_development_leadership', label: 'Youth Development & Leadership' },
