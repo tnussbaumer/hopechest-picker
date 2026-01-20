@@ -1,6 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+/* MOBILE TEST CHECKLIST:
+ * [ ] iPhone Safari: Can scroll step 5 options without wizard reset
+ * [ ] iPhone Safari: Select/unselect options, wizard state persists
+ * [ ] Android Chrome: Can scroll step 5 options without wizard reset  
+ * [ ] Android Chrome: Select/unselect options, wizard state persists
+ * [ ] Desktop: Wizard still works normally (no regression)
+ * [ ] Close button clears sessionStorage
+ * [ ] Completing wizard clears sessionStorage
+ */
+
+import { useState, useEffect } from 'react';
 import { WizardState, AttendanceRange, GlobalPresenceStatus, RegionPreference, ImportanceLevel, PartnershipPosture, MobilizationOption, ImpactDNA, FrontierType } from '../types/wizard';
 
 interface WizardProps {
@@ -65,6 +75,85 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   const [impactDNA, setImpactDNA] = useState<ImpactDNA[]>([]);
   const [frontierType, setFrontierType] = useState<FrontierType | ''>('');
 
+  // Restore state from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedStep = sessionStorage.getItem('hopechest_wizard_step');
+    const savedAnswers = sessionStorage.getItem('hopechest_wizard_answers');
+    
+    if (savedStep && savedAnswers) {
+      try {
+        const answers = JSON.parse(savedAnswers);
+        setStep(parseInt(savedStep, 10));
+        setChurchName(answers.churchName || '');
+        setDenomination(answers.denomination || '');
+        setContactName(answers.contactName || '');
+        setContactRole(answers.contactRole || '');
+        setEmail(answers.email || '');
+        setAttendance(answers.attendance || '300-500');
+        setGlobalPresenceStatus(answers.globalPresenceStatus || 'no');
+        setRegionPreference(answers.regionPreference || 'complement_existing');
+        setExistingRegions(answers.existingRegions || '');
+        setCostSlider(answers.costSlider ?? 50);
+        setTimeSlider(answers.timeSlider ?? 50);
+        setEnglishSlider(answers.englishSlider ?? 50);
+        setPartnershipPosture(answers.partnershipPosture || 'own_community');
+        setMobilization(answers.mobilization || []);
+        setMobilizationOther(answers.mobilizationOther || '');
+        setImpactDNA(answers.impactDNA || []);
+        setFrontierType(answers.frontierType || '');
+      } catch (error) {
+        console.error('Failed to restore wizard state:', error);
+      }
+    }
+  }, []);
+
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    sessionStorage.setItem('hopechest_wizard_step', step.toString());
+    sessionStorage.setItem('hopechest_wizard_answers', JSON.stringify({
+      churchName,
+      denomination,
+      contactName,
+      contactRole,
+      email,
+      attendance,
+      globalPresenceStatus,
+      regionPreference,
+      existingRegions,
+      costSlider,
+      timeSlider,
+      englishSlider,
+      partnershipPosture,
+      mobilization,
+      mobilizationOther,
+      impactDNA,
+      frontierType,
+    }));
+  }, [
+    step,
+    churchName,
+    denomination,
+    contactName,
+    contactRole,
+    email,
+    attendance,
+    globalPresenceStatus,
+    regionPreference,
+    existingRegions,
+    costSlider,
+    timeSlider,
+    englishSlider,
+    partnershipPosture,
+    mobilization,
+    mobilizationOther,
+    impactDNA,
+    frontierType,
+  ]);
+
   // Convert slider value (0-100) to importance level
   const sliderToImportance = (value: number): ImportanceLevel => {
     if (value <= 33) return 'low';
@@ -96,6 +185,13 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
         impactDNA: impactDNA.length > 0 ? impactDNA : undefined,
         frontierType: impactDNA.includes('frontier_hard_to_reach') && frontierType ? frontierType : undefined,
       };
+      
+      // Clear sessionStorage when wizard completes successfully
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('hopechest_wizard_step');
+        sessionStorage.removeItem('hopechest_wizard_answers');
+      }
+      
       onComplete(wizardState);
       handleClose();
     }
@@ -108,6 +204,12 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   };
 
   const handleClose = () => {
+    // Clear sessionStorage when user explicitly closes wizard
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('hopechest_wizard_step');
+      sessionStorage.removeItem('hopechest_wizard_answers');
+    }
+    
     setStep(1);
     setChurchName('');
     setDenomination('');
@@ -151,37 +253,41 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 my-8 relative">
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-        >
-          ×
-        </button>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full h-[100dvh] md:h-auto md:max-h-[90dvh] flex flex-col relative">
+        {/* FIXED HEADER */}
+        <div className="flex-shrink-0 p-6 md:p-8">
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={handleClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+          >
+            ×
+          </button>
 
-        {/* Progress Indicator */}
-        <div className="flex justify-center mb-6 gap-2">
-          {[1, 2, 3, 4, 5].map((num) => (
-            <div
-              key={num}
-              className={`h-2 w-12 rounded-full transition-all ${
-                num === step
-                  ? 'bg-brand-teal'
-                  : num < step
-                  ? 'bg-brand-teal-light'
-                  : 'bg-gray-200'
-              }`}
-            />
-          ))}
+          {/* Progress Indicator */}
+          <div className="flex justify-center mb-4 gap-2">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <div
+                key={num}
+                className={`h-2 w-12 rounded-full transition-all ${
+                  num === step
+                    ? 'bg-brand-teal'
+                    : num < step
+                    ? 'bg-brand-teal-light'
+                    : 'bg-gray-200'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Step indicator text */}
+          <p className="text-center text-sm text-gray-500">Step {step} of 5</p>
         </div>
 
-        {/* Step indicator text */}
-        <p className="text-center text-sm text-gray-500 mb-6">Step {step} of 5</p>
-
-        {/* Step Content */}
-        <div className="mb-8">
+        {/* SCROLLABLE CONTENT */}
+        <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-6">
           {/* SCREEN 1 - IDENTITY */}
           {step === 1 && (
             <div>
@@ -307,6 +413,7 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
                       { value: 'not_sure', label: "Not sure / it's informal" },
                     ].map((option) => (
                       <button
+                        type="button"
                         key={option.value}
                         onClick={() => setGlobalPresenceStatus(option.value as GlobalPresenceStatus)}
                         className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
@@ -643,30 +750,34 @@ export default function Wizard({ isOpen, onClose, onComplete }: WizardProps) {
           )}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={handleBack}
-            disabled={step === 1}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              step === 1
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-            }`}
-          >
-            Back
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={!canProceed()}
-            className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-              canProceed()
-                ? 'bg-brand-orange hover:bg-brand-brown text-white shadow-lg hover:shadow-xl'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {step === 5 ? 'Find My Perfect Match' : 'Next'}
-          </button>
+        {/* FIXED FOOTER */}
+        <div className="flex-shrink-0 border-t p-6 md:p-8">
+          <div className="flex justify-between">
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={step === 1}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                step === 1
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+              }`}
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={!canProceed()}
+              className={`px-8 py-3 rounded-lg font-semibold transition-all ${
+                canProceed()
+                  ? 'bg-brand-orange hover:bg-brand-brown text-white shadow-lg hover:shadow-xl'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              {step === 5 ? 'Find My Perfect Match' : 'Next'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
