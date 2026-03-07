@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/src/lib/supabase';
-import { resend } from '@/src/lib/resend';
+import { getResendClient } from '@/src/lib/resend';
 import InternalAlert from '@/src/emails/InternalAlert';
 import PastorResults from '@/src/emails/PastorResults';
 import { WizardState, CountryScore } from '@/src/types/wizard';
@@ -58,20 +58,30 @@ export async function POST(request: NextRequest) {
     };
 
     // Save to Supabase
-    const { data, error } = await supabase
-      .from('fit_guides')
-      .insert([fitGuideData])
-      .select();
+    console.log('💾 Saving to Supabase...');
+    let data;
+    try {
+      const result = await supabase
+        .from('fit_guides')
+        .insert([fitGuideData])
+        .select();
 
-    if (error) {
-      console.error('Supabase error:', error);
+      if (result.error) {
+        console.error('❌ Supabase error:', result.error);
+        return NextResponse.json(
+          { success: false, error: `Database error: ${result.error.message}` },
+          { status: 500 }
+        );
+      }
+      data = result.data;
+      console.log('✅ Supabase save successful:', data);
+    } catch (dbError) {
+      console.error('❌ Supabase connection failed:', dbError);
       return NextResponse.json(
-        { success: false, error: error.message },
+        { success: false, error: `Database connection failed: ${dbError instanceof Error ? dbError.message : String(dbError)}` },
         { status: 500 }
       );
     }
-
-    console.log('Fit guide saved successfully:', data);
     
     // Send email notifications (wrapped in try/catch so user still sees success if emails fail)
     try {
@@ -92,6 +102,8 @@ export async function POST(request: NextRequest) {
       console.log('   From:', EMAIL_FROM);
       console.log('   Internal recipient:', INTERNAL_EMAIL_TO);
       console.log('   Pastor/User recipient:', pastorEmail);
+
+      const resend = getResendClient();
 
       // Send internal alert email
       console.log('\n📨 Sending Internal Alert email to:', INTERNAL_EMAIL_TO);
