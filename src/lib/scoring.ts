@@ -305,8 +305,6 @@ function applyPartnershipScoring(
     scores.Guatemala += 3;
     scores.Uganda += 3;
     scores.Ethiopia += 3;
-  } else if (posture === 'not_sure') {
-    scores.Guatemala += 4;
   }
 }
 
@@ -562,6 +560,14 @@ function applyTieBreaking(scores: Record<string, number>, answers: WizardState) 
         }
       }
       
+      // Partnership "not sure" gives Guatemala a tiebreaker edge (lower travel bar)
+      if (
+        answers.partnershipPosture === 'not_sure' &&
+        (top1 === 'Guatemala' || top2 === 'Guatemala')
+      ) {
+        scores.Guatemala += 3;
+      }
+
       // If mobilizationOther contains Spanish-related keywords, favor Guatemala when it's in top 2
       if (answers.mobilizationOther && (top1 === 'Guatemala' || top2 === 'Guatemala')) {
         const text = answers.mobilizationOther.toLowerCase();
