@@ -305,8 +305,6 @@ function applyPartnershipScoring(
     scores.Guatemala += 3;
     scores.Uganda += 3;
     scores.Ethiopia += 3;
-  } else if (posture === 'not_sure') {
-    scores.Guatemala += 4;
   }
 }
 
@@ -446,71 +444,85 @@ function applyImpactDNAScoring(
 }
 
 /**
- * Add contextual reasons to ensure minimum 6 bullet points
+ * Add contextual reasons to ensure minimum 3 bullet points for each top country
  */
 function addContextualReasons(
   answers: WizardState,
   scores: Record<string, number>,
   reasons: Record<string, string[]>
 ) {
-  // Sort to find which country has highest score
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const topCountry = sorted[0][0];
-  
-  // Add contextual reasons based on user selections until we have at least 6
-  const currentReasons = reasons[topCountry] || [];
-  
-  // Add partnership-related reasons
-  if (currentReasons.length < 6 && answers.partnershipPosture === 'own_community') {
-    if (topCountry === 'Guatemala') {
-      reasons.Guatemala.push('Build deep, long-term relationships with your own community');
-    } else if (topCountry === 'Uganda') {
-      reasons.Uganda.push('Own a transformational partnership with lasting impact');
-    } else if (topCountry === 'Ethiopia') {
-      reasons.Ethiopia.push('Establish multi-year relationships that change generations');
+  const top3Countries = sorted.slice(0, 3).map(([country]) => country);
+
+  // Per-country fallback reasons pool
+  const countryFallbacks: Record<string, string[]> = {
+    Guatemala: [
+      'Proven track record of successful church partnerships',
+      'Build deep, long-term relationships with your own community',
+      'Accessible first trip with strong support infrastructure',
+      'Excellent for engaging your whole church',
+    ],
+    Uganda: [
+      'High community need creates profound ministry opportunities',
+      'Own a transformational partnership with lasting impact',
+      'Strong frontier / hard-to-reach context for meaningful impact',
+      'English widely spoken—easy communication for your team',
+    ],
+    Ethiopia: [
+      'Rich cultural heritage enhances cross-cultural learning',
+      'Establish multi-year relationships that change generations',
+      'Meaningful frontier ministry opportunities in underserved areas',
+      'Direct flights available from select U.S. cities reduce travel friction',
+    ],
+  };
+
+  for (const country of top3Countries) {
+    const r = reasons[country];
+
+    // Partnership posture
+    if (r.length < 3 && answers.partnershipPosture === 'own_community') {
+      if (country === 'Guatemala') r.push('Build deep, long-term relationships with your own community');
+      else if (country === 'Uganda') r.push('Own a transformational partnership with lasting impact');
+      else if (country === 'Ethiopia') r.push('Establish multi-year relationships that change generations');
     }
-  }
-  
-  // Add Impact DNA related concise reasons
-  if (currentReasons.length < 6 && answers.impactDNA && answers.impactDNA.length > 0) {
-    if (answers.impactDNA.includes('friendship_model')) {
-      reasons[topCountry].push('Dignity-based relationships honor community leadership');
+
+    // Impact DNA reasons
+    if (answers.impactDNA && answers.impactDNA.length > 0) {
+      if (r.length < 3 && answers.impactDNA.includes('friendship_model')) {
+        r.push('Dignity-based relationships honor community leadership');
+      }
+      if (r.length < 3 && answers.impactDNA.includes('carepoint_graduation')) {
+        r.push('Sustainable model designed for community independence');
+      }
+      if (r.length < 3 && answers.impactDNA.includes('community_transformation')) {
+        r.push('Holistic approach addresses root causes, not just symptoms');
+      }
+      if (r.length < 3 && answers.impactDNA.includes('education_medical')) {
+        r.push('Education and medical programs create lasting community change');
+      }
+      if (r.length < 3 && answers.impactDNA.includes('youth_development_leadership')) {
+        r.push('Youth leadership development multiplies long-term impact');
+      }
     }
-    if (currentReasons.length < 6 && answers.impactDNA.includes('carepoint_graduation')) {
-      reasons[topCountry].push('Sustainable model designed for community independence');
+
+    // Mobilization reasons
+    if (answers.mobilization && answers.mobilization.length > 0) {
+      if (r.length < 3 && answers.mobilization.includes('families_with_children')) {
+        r.push('Family-friendly environment for meaningful intergenerational impact');
+      }
+      if (r.length < 3 && answers.mobilization.includes('construction_teams')) {
+        r.push('Hands-on construction projects create visible, lasting infrastructure');
+      }
+      if (r.length < 3 && answers.mobilization.includes('medical_professionals')) {
+        r.push('Critical healthcare needs where your medical expertise makes real difference');
+      }
     }
-    if (currentReasons.length < 6 && answers.impactDNA.includes('community_transformation')) {
-      reasons[topCountry].push('Holistic approach addresses root causes, not just symptoms');
-    }
-    if (currentReasons.length < 6 && answers.impactDNA.includes('education_medical')) {
-      reasons[topCountry].push('Education and medical programs create lasting community change');
-    }
-    if (currentReasons.length < 6 && answers.impactDNA.includes('youth_development_leadership')) {
-      reasons[topCountry].push('Youth leadership development multiplies long-term impact');
-    }
-  }
-  
-  // Add mobilization-specific reasons if we still need more
-  if (currentReasons.length < 6 && answers.mobilization && answers.mobilization.length > 0) {
-    if (answers.mobilization.includes('families_with_children')) {
-      reasons[topCountry].push('Family-friendly environment for meaningful intergenerational impact');
-    }
-    if (currentReasons.length < 6 && answers.mobilization.includes('construction_teams')) {
-      reasons[topCountry].push('Hands-on construction projects create visible, lasting infrastructure');
-    }
-    if (currentReasons.length < 6 && answers.mobilization.includes('medical_professionals')) {
-      reasons[topCountry].push('Critical healthcare needs where your medical expertise makes real difference');
-    }
-  }
-  
-  // General country-specific reasons as fallback
-  if (currentReasons.length < 6) {
-    if (topCountry === 'Guatemala') {
-      reasons.Guatemala.push('Proven track record of successful church partnerships');
-    } else if (topCountry === 'Uganda') {
-      reasons.Uganda.push('High community need creates profound ministry opportunities');
-    } else if (topCountry === 'Ethiopia') {
-      reasons.Ethiopia.push('Rich cultural heritage enhances cross-cultural learning');
+
+    // Fill remaining slots from country-specific fallback pool
+    const fallbacks = countryFallbacks[country] || [];
+    for (const fallback of fallbacks) {
+      if (r.length >= 3) break;
+      if (!r.includes(fallback)) r.push(fallback);
     }
   }
 }
@@ -548,6 +560,14 @@ function applyTieBreaking(scores: Record<string, number>, answers: WizardState) 
         }
       }
       
+      // Partnership "not sure" gives Guatemala a tiebreaker edge (lower travel bar)
+      if (
+        answers.partnershipPosture === 'not_sure' &&
+        (top1 === 'Guatemala' || top2 === 'Guatemala')
+      ) {
+        scores.Guatemala += 3;
+      }
+
       // If mobilizationOther contains Spanish-related keywords, favor Guatemala when it's in top 2
       if (answers.mobilizationOther && (top1 === 'Guatemala' || top2 === 'Guatemala')) {
         const text = answers.mobilizationOther.toLowerCase();
