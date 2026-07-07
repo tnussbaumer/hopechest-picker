@@ -27,10 +27,14 @@ const COUNTRY_DATA = {
     costRange: '$1,500–$2,200',
     language: 'Spanish',
     visionTrips: [
-      { dateRange: 'Feb 23–28', leader: 'TBD', tripId: 'guatemala-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-feb26/' },
-      { dateRange: 'Apr 13–18', leader: 'TBD', tripId: 'guatemala-apr-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-apr26/' },
-      { dateRange: 'Jun 15–20', leader: 'TBD', tripId: 'guatemala-jun-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-jun26/' },
-      { dateRange: 'Sep 7–12', leader: 'TBD', tripId: 'guatemala-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/gt-sep26/' },
+      { dateRange: 'Sep 7–12, 2026', tripId: 'VT260902T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Nov 2–7, 2026', tripId: 'VT261101T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Feb 22–27, 2027', tripId: 'VT270201T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Apr 12–17, 2027', tripId: 'VT270401T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Jun 7–12, 2027', tripId: 'VT270601T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Jul 16–31, 2027', tripId: 'VT270701T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Sep 20–25, 2027', tripId: 'VT270901T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Nov 8–13, 2027', tripId: 'VT271101T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
     ] as VisionTrip[],
     excursions: [
       { name: 'Coffee Farm Tour', description: 'Explore a local coffee farm and learn about the bean-to-cup process.', imageUrl: '/images/guatemala-excursion-coffee.jpg' },
@@ -66,10 +70,9 @@ const COUNTRY_DATA = {
     costRange: '$1,800–$2,750',
     language: 'English',
     visionTrips: [
-      { dateRange: 'Feb 10–18', leader: 'TBD', tripId: 'uganda-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-feb26/' },
-      { dateRange: 'Apr 7–14', leader: 'TBD', tripId: 'uganda-apr-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-apr26/' },
-      { dateRange: 'Jul 27–Aug 4', leader: 'TBD', tripId: 'uganda-jul-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-jul26/' },
-      { dateRange: 'Sep 8–15', leader: 'TBD', tripId: 'uganda-sep-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/ug-sep26/' },
+      { dateRange: 'Jan 19–26, 2027', tripId: 'VT270102T', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
+      { dateRange: 'Feb 10–17, 2027', tripId: 'VT270202T', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
+      { dateRange: 'Jul 28–Aug 4, 2027', tripId: 'VT270702', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
     ] as VisionTrip[],
     excursions: [
       { 
@@ -97,9 +100,14 @@ const COUNTRY_DATA = {
     costRange: '$1,800–$2,750',
     language: 'Amharic (interpreters available)',
     visionTrips: [
-      { dateRange: 'Feb 16–20', leader: 'Peter Y. & Thad S.', tripId: 'ethiopia-feb-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-feb26/' },
-      { dateRange: 'May 6–11', leader: 'TBD', tripId: 'ethiopia-may-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-may26/' },
-      { dateRange: 'Aug 12–17', leader: 'TBD', tripId: 'ethiopia-aug-2026', registrationUrl: 'https://www.hopechest.org/vision-trips/et-aug26/' },
+      { dateRange: 'Jul 29–Aug 3, 2026', tripId: 'VT260702T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Aug 11–16, 2026', tripId: 'VT260801T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Oct 28–Nov 2, 2026', tripId: 'VT261001T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Feb 10–17, 2027', tripId: 'VT270203T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Apr 22–28, 2027', tripId: 'VT270402T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Jun 17–23, 2027', tripId: 'VT270602T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Sep 23–29, 2027', tripId: 'VT270902T', highlight: 'Meskel Holiday', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Nov 11–17, 2027', tripId: 'VT271102T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
     ] as VisionTrip[],
     excursions: [
       { 
@@ -357,12 +365,17 @@ export default function Results({ wizardAnswers, scoringResults, onReset }: Resu
                 {/* 2026 Vision Trips - Pushed to bottom with mt-auto */} 
                 <div className="mt-auto pt-4 border-t border-gray-200">
                   <h3 className="text-sm font-bold text-gray-800 mb-3">
-                    2026 Vision Trips
+                    Upcoming Vision Trips
                   </h3>
                   <div className="space-y-2">
                     {countryData.visionTrips.map((trip) => (
                       <div key={trip.tripId} className="flex justify-between items-center">
-                        <span className="text-sm text-gray-700">{trip.dateRange}</span>
+                        <span className="text-sm text-gray-700">
+                          {trip.dateRange}
+                          {trip.highlight && (
+                            <span className="block text-xs text-brand-orange font-semibold">{trip.highlight}</span>
+                          )}
+                        </span>
                         <a
                           href={trip.registrationUrl}
                           target="_blank"

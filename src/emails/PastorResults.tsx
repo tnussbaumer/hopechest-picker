@@ -44,8 +44,8 @@ export const PastorResults = ({
               you find the perfect match for your church's vision trip.
             </Text>
             <Text style={text}>
-              Based on your church's priorities and preferences, here are your top 3 
-              recommended countries for 2026:
+              Based on your church's priorities and preferences, here are your top 3
+              recommended countries:
             </Text>
           </Section>
 
@@ -74,11 +74,11 @@ export const PastorResults = ({
 
           <Section style={ctaSection}>
             <Text style={text}>
-              Ready to take the next step? View the complete 2026 schedule and available 
+              Ready to take the next step? View the complete schedule and available
               trip dates for your top matches.
             </Text>
             <Button style={button} href={scheduleUrl}>
-              View Full 2026 Schedule
+              View Full Vision Trip Schedule
             </Button>
           </Section>
 

@@ -6,6 +6,7 @@ export interface VisionTrip {
   leader?: string;
   tripId: string;
   registrationUrl: string;
+  highlight?: string;
 }
 
 /**
