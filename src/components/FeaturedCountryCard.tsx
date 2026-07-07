@@ -408,7 +408,7 @@ export default function FeaturedCountryCard({
         {countryData.visionTrips.length > 0 && (
           <div className="border-t-2 border-gray-200 pt-8">
             <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              2026 Vision Trips to {country}
+              Upcoming Vision Trips to {country}
             </h3>
             <p className="text-center text-gray-600 mb-6">
               Experience this partnership firsthand. These trips fill quickly—reserve your spot today.
@@ -421,6 +421,9 @@ export default function FeaturedCountryCard({
                 >
                   <div>
                     <p className="font-bold text-gray-800 text-lg">{trip.dateRange}</p>
+                    {trip.highlight && (
+                      <p className="text-sm text-brand-orange font-semibold">{trip.highlight}</p>
+                    )}
                     {trip.leader && trip.leader !== "TBD" && (
                       <p className="text-sm text-gray-600">Led by {trip.leader}</p>
                     )}

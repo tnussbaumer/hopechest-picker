@@ -1,7 +1,7 @@
 import { Country } from '../types';
 
 /**
- * Mock data for HopeChest countries with 2026 Vision Trip schedule
+ * Mock data for HopeChest countries with the Vision Trip schedule
  */
 export const countries: Country[] = [
   {
@@ -12,30 +12,14 @@ export const countries: Country[] = [
     imgUrl: '/images/guatemala-hero.jpg',
     tags: ['Active', 'Partner', 'Youth Programs'],
     visionTrips: [
-      {
-        dateRange: 'Feb 23–28',
-        leader: 'TBD',
-        tripId: 'guatemala-feb-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/gt-feb26/',
-      },
-      {
-        dateRange: 'Apr 13–18',
-        leader: 'TBD',
-        tripId: 'guatemala-apr-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/gt-apr26/',
-      },
-      {
-        dateRange: 'Jun 15–20',
-        leader: 'TBD',
-        tripId: 'guatemala-jun-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/gt-jun26/',
-      },
-      {
-        dateRange: 'Sep 7–12',
-        leader: 'TBD',
-        tripId: 'guatemala-sep-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/gt-sep26/',
-      },
+      { dateRange: 'Sep 7–12, 2026', tripId: 'VT260902T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Nov 2–7, 2026', tripId: 'VT261101T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Feb 22–27, 2027', tripId: 'VT270201T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Apr 12–17, 2027', tripId: 'VT270401T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Jun 7–12, 2027', tripId: 'VT270601T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Jul 16–31, 2027', tripId: 'VT270701T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Sep 20–25, 2027', tripId: 'VT270901T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
+      { dateRange: 'Nov 8–13, 2027', tripId: 'VT271101T', registrationUrl: 'https://www.hopechest.org/guatemala-vision-trips/' },
     ],
   },
   {
@@ -46,30 +30,9 @@ export const countries: Country[] = [
     imgUrl: 'https://loremflickr.com/800/600/uganda,landscape',
     tags: ['Active', 'Partner', 'Education'],
     visionTrips: [
-      {
-        dateRange: 'Feb 10–18',
-        leader: 'TBD',
-        tripId: 'uganda-feb-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/ug-feb26/',
-      },
-      {
-        dateRange: 'Apr 7–14',
-        leader: 'TBD',
-        tripId: 'uganda-apr-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/ug-apr26/',
-      },
-      {
-        dateRange: 'Jul 27–Aug 4',
-        leader: 'TBD',
-        tripId: 'uganda-jul-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/ug-jul26/',
-      },
-      {
-        dateRange: 'Sep 8–15',
-        leader: 'TBD',
-        tripId: 'uganda-sep-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/ug-sep26/',
-      },
+      { dateRange: 'Jan 19–26, 2027', tripId: 'VT270102T', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
+      { dateRange: 'Feb 10–17, 2027', tripId: 'VT270202T', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
+      { dateRange: 'Jul 28–Aug 4, 2027', tripId: 'VT270702', registrationUrl: 'https://www.hopechest.org/uganda-vision-trips/' },
     ],
   },
   {
@@ -89,24 +52,14 @@ export const countries: Country[] = [
     imgUrl: 'https://loremflickr.com/800/600/ethiopia,landscape',
     tags: ['Partner', 'Healthcare', 'Education'],
     visionTrips: [
-      {
-        dateRange: 'Feb 16–20',
-        leader: 'Peter Y. & Thad S.',
-        tripId: 'ethiopia-feb-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/et-feb26/',
-      },
-      {
-        dateRange: 'May 6–11',
-        leader: 'TBD',
-        tripId: 'ethiopia-may-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/et-may26/',
-      },
-      {
-        dateRange: 'Aug 12–17',
-        leader: 'TBD',
-        tripId: 'ethiopia-aug-2026',
-        registrationUrl: 'https://www.hopechest.org/vision-trips/et-aug26/',
-      },
+      { dateRange: 'Jul 29–Aug 3, 2026', tripId: 'VT260702T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Aug 11–16, 2026', tripId: 'VT260801T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Oct 28–Nov 2, 2026', tripId: 'VT261001T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Feb 10–17, 2027', tripId: 'VT270203T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Apr 22–28, 2027', tripId: 'VT270402T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Jun 17–23, 2027', tripId: 'VT270602T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Sep 23–29, 2027', tripId: 'VT270902T', highlight: 'Meskel Holiday', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
+      { dateRange: 'Nov 11–17, 2027', tripId: 'VT271102T', registrationUrl: 'https://www.hopechest.org/ethiopia-vision-trips/' },
     ],
   },
   {
